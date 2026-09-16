@@ -85,12 +85,17 @@ public:
     }
     */
 
-    // ASM version, verified by comparing resulting data with C++ version data
+    /* Ported: off Windows this is the C++ version kept in the comment above, which the author
+    ** verified produces the same data as the assembly.  The two are the same three steps - carry
+    ** out the top bit, shift left, add the byte and the carry back in - and this CRC feeds the
+    ** desync check, so anything but bit-identical would show up as every network game
+    ** disagreeing on the first frame.
+    **
+    ** The assembly is kept for MSVC because that build is unchanged by this port.  It is worth
+    ** noting that the comment above it is right: the block uses EBX, ESI and EDI without the
+    ** compiler knowing, and it survives on luck. */
+#ifdef _MSC_VER
     unsigned *crcPtr=&crc;
-    // Same rule as fast_float_trunc in BaseType.h: EBX, ESI and EDI belong to the
-    // caller, and this block uses all three.  Nothing has crashed on it yet, but that
-    // is luck -- whichever of them the compiler happens to hold a live value in is
-    // gone when the block ends.
     _asm
     {
       push ebx
@@ -114,6 +119,15 @@ public:
       pop esi
       pop ebx
     };
+#else
+    for (const UnsignedByte *uintPtr=(const UnsignedByte *)buf; len>0; len--, uintPtr++)
+    {
+      unsigned hibit = (crc & 0x80000000u) ? 1u : 0u;
+      crc <<= 1;
+      crc += *uintPtr;
+      crc += hibit;
+    }
+#endif
   }
 
   /// Clears the CRC to 0
