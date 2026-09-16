@@ -39,10 +39,12 @@
 #include	"mpmath.h"
 #include	"rng.h"
 
-int bignum::Error = 0;
-bool bignum::Carry = false;
-bool bignum::Borrow = false;
-bignum bignum::Remainder;
+/* Ported: bignum is a typedef for Int<MAX_UNIT_PRECISION>, so these define static members of a
+** class template specialisation and the standard asks for the template<> in front. */
+template<> int bignum::Error = 0;
+template<> bool bignum::Carry = false;
+template<> bool bignum::Borrow = false;
+template<> bignum bignum::Remainder;
 
 
 

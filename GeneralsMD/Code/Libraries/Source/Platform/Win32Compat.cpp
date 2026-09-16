@@ -39,6 +39,7 @@
 #include <pthread.h>
 #include <sched.h>
 #include <sys/stat.h>
+#include <sys/statvfs.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -883,4 +884,124 @@ LONG RegSetValueExA(HKEY, LPCSTR, DWORD, DWORD, const BYTE *, DWORD)
 LONG RegCloseKey(HKEY)
 {
 	return ERROR_SUCCESS;
+}
+
+// ---------------------------------------------------------------------------
+// The tail: version resources, named mutexes, disk space, path splitting.
+// ---------------------------------------------------------------------------
+
+DWORD FormatMessageA(DWORD, LPCVOID, DWORD message_id, DWORD, LPSTR buffer, DWORD size, void *)
+{
+	if (buffer == nullptr || size == 0) return 0;
+	// The callers pass a GetLastError value, and this shim's error codes are errno where they are
+	// not one of the ERROR_ constants, so strerror is the right text for most of them.
+	const char * text = std::strerror((int)message_id);
+	std::snprintf(buffer, size, "%s", text ? text : "unknown error");
+	return (DWORD)std::strlen(buffer);
+}
+
+/* Named mutexes.
+ *
+ * The one caller uses this to notice a second copy of the game on the same machine.  A process
+ * local mutex cannot notice that, so this never reports ERROR_ALREADY_EXISTS and a second copy is
+ * not prevented - which is what the LAN screen wants anyway, since the game supports two copies on
+ * one machine playing each other. */
+
+HANDLE CreateMutexA(LPVOID, BOOL initial_owner, LPCSTR)
+{
+	// Backed by the event handle shape so CloseHandle already knows how to free it.
+	EventHandle * handle = new EventHandle(true, initial_owner == FALSE);
+	g_LastError = ERROR_SUCCESS;
+	return handle;
+}
+
+BOOL ReleaseMutex(HANDLE mutex) { return SetEvent(mutex); }
+
+BOOL GetDiskFreeSpaceA(LPCSTR, LPDWORD sectors_per_cluster, LPDWORD bytes_per_sector,
+                       LPDWORD free_clusters, LPDWORD total_clusters)
+{
+	// srandom.cpp stirs these into a seed, so any honest reading of the filesystem will do.
+	struct statvfs st;
+	if (statvfs(".", &st) != 0) { SetErrnoError(); return FALSE; }
+	if (sectors_per_cluster != nullptr) *sectors_per_cluster = 1;
+	if (bytes_per_sector    != nullptr) *bytes_per_sector    = (DWORD)st.f_frsize;
+	if (free_clusters       != nullptr) *free_clusters       = (DWORD)(st.f_bavail & 0xFFFFFFFFull);
+	if (total_clusters      != nullptr) *total_clusters      = (DWORD)(st.f_blocks & 0xFFFFFFFFull);
+	return TRUE;
+}
+
+DWORD GetFileVersionInfoSizeA(LPCSTR, LPDWORD handle)
+{
+	// A Mach-O image carries no VERSIONINFO resource.  Zero is what Windows returns for a file
+	// without one, and the callers already branch on it.
+	if (handle != nullptr) *handle = 0;
+	g_LastError = ERROR_FILE_NOT_FOUND;
+	return 0;
+}
+
+BOOL GetFileVersionInfoA(LPCSTR, DWORD, DWORD, LPVOID)
+{
+	g_LastError = ERROR_FILE_NOT_FOUND;
+	return FALSE;
+}
+
+BOOL VerQueryValueA(LPCVOID, LPCSTR, LPVOID * buffer, UINT * length)
+{
+	if (buffer != nullptr) *buffer = nullptr;
+	if (length != nullptr) *length = 0;
+	return FALSE;
+}
+
+/* _splitpath and _makepath.
+ *
+ * There are no drive letters here, so the drive component always comes back empty.  The separator
+ * is either slash, because the tree builds paths with backslashes and reads them back on a
+ * filesystem that uses forward ones. */
+
+static const char * LastSeparator(const char * path)
+{
+	const char * slash     = std::strrchr(path, '/');
+	const char * backslash = std::strrchr(path, '\\');
+	if (slash == nullptr)     return backslash;
+	if (backslash == nullptr) return slash;
+	return (slash > backslash) ? slash : backslash;
+}
+
+void _splitpath(const char * path, char * drive, char * dir, char * fname, char * ext)
+{
+	if (drive != nullptr) drive[0] = 0;
+	if (dir   != nullptr) dir[0]   = 0;
+	if (fname != nullptr) fname[0] = 0;
+	if (ext   != nullptr) ext[0]   = 0;
+	if (path == nullptr) return;
+
+	const char * sep  = LastSeparator(path);
+	const char * leaf = (sep != nullptr) ? sep + 1 : path;
+
+	if (dir != nullptr && sep != nullptr) {
+		size_t n = (size_t)(sep - path) + 1;
+		std::memcpy(dir, path, n);
+		dir[n] = 0;
+	}
+
+	const char * dot = std::strrchr(leaf, '.');
+	if (dot == nullptr) {
+		if (fname != nullptr) std::strcpy(fname, leaf);
+	} else {
+		if (fname != nullptr) {
+			size_t n = (size_t)(dot - leaf);
+			std::memcpy(fname, leaf, n);
+			fname[n] = 0;
+		}
+		if (ext != nullptr) std::strcpy(ext, dot);
+	}
+}
+
+void _makepath(char * path, const char *, const char * dir, const char * fname, const char * ext)
+{
+	if (path == nullptr) return;
+	path[0] = 0;
+	if (dir   != nullptr && dir[0]   != 0) std::strcat(path, dir);
+	if (fname != nullptr && fname[0] != 0) std::strcat(path, fname);
+	if (ext   != nullptr && ext[0]   != 0) std::strcat(path, ext);
 }

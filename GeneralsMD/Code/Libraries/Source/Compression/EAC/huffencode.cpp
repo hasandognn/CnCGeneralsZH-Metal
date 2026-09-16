@@ -1050,8 +1050,10 @@ static void HUFF_pack(struct HuffEncodeContext *EC,
 		if (!i3)
 			HUFF_writecode(EC,dest,i);
 
-		if (((int) bptr1- (int) EC->buffer) >= (int)(EC->plen+curpc))
-			curpc = (int) bptr1 - (int) EC->buffer - EC->plen;
+		/* Ported: a pointer difference taken by casting both sides to int.  Both are
+		   unsigned char *, so subtracting them first is the same answer and fits. */
+		if ((int)(bptr1 - EC->buffer) >= (int)(EC->plen+curpc))
+			curpc = (int)(bptr1 - EC->buffer) - EC->plen;
 	}
 
 	/* write EOF ([clue] 0gn [10]) */

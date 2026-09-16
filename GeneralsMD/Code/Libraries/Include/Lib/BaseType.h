@@ -192,6 +192,7 @@ inline Real deg2rad(Real rad) { return rad * (PI/180); }
 // code, so use this function with caution -- it might not round in the way you want.
 __forceinline long fast_float2long_round(float f)
 {
+#ifdef _MSC_VER
 	long i;
 
 	__asm {
@@ -200,12 +201,20 @@ __forceinline long fast_float2long_round(float f)
 	}
 
 	return i;
+#else
+	/* Ported: fld/fistp rounds by the FPU's current mode, which the comment above warns is left in
+	** unpredictable states.  Both callers - REAL_TO_INT_CEIL and REAL_TO_INT_FLOOR - hand it a
+	** value fast_float_ceil or fast_float_floor has already made integral, so there is nothing
+	** left to round and the cast is exact. */
+	return (long)f;
+#endif
 }
 
 // super fast float trunc routine, works always (independent of any FPU modes)
 // code courtesy of Martin Hoffesommer (grin)
 __forceinline float fast_float_trunc(float f)
 {
+#ifdef _MSC_VER
   // EDX, not EBX, for the zero: an __asm block has to leave EBX/ESI/EDI the way it
   // found them, and this one did not.  Where the compiler parks the saved ESP in EBX
   // (W3DTreeBuffer::doLighting does) the epilogue's "mov esp,ebx" then set ESP to 0
@@ -222,6 +231,18 @@ __forceinline float fast_float_trunc(float f)
     and [f],eax
   }
   return f;
+#else
+  /* Ported: the assembly masked the fractional mantissa bits off by building a mask from the
+  ** exponent, which is truncation toward zero written the way 1999 had to write it.  That is one
+  ** instruction now - frintz on arm64, roundss with mode 3 on x86-64 - and __builtin_truncf is
+  ** how you ask for it without a libm call.
+  **
+  ** Identical for every value the game passes.  Better than identical past 2^32: "sar eax,cl"
+  ** takes its count mod 32, so at an exponent of 32 the mask fell back to 0xff800000 and cleared
+  ** the mantissa of a number that was already whole.  Nothing reaches that with gameplay
+  ** coordinates, which is why it never showed. */
+  return __builtin_truncf(f);
+#endif
 }
 
 /* floor and ceil, off the truncation above.

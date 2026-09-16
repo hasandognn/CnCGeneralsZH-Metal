@@ -85,6 +85,26 @@ char* strtrim(char* buffer)
 }
 
 
+#ifndef _WIN32
+WCHAR * wcstrim(WCHAR * buffer)
+{
+	// Same walk as the wchar_t version below, over the 16-bit string.
+	if (buffer == nullptr) return buffer;
+
+	WCHAR * start = buffer;
+	while (*start != 0 && *start <= 32) ++start;
+
+	WCHAR * end = start;
+	while (*end != 0) ++end;
+	while (end > start && *(end - 1) <= 32) --end;
+
+	WCHAR * out = buffer;
+	while (start < end) *out++ = *start++;
+	*out = 0;
+	return buffer;
+}
+#endif
+
 wchar_t* wcstrim(wchar_t* buffer)
 {
 	if (buffer) {

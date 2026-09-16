@@ -115,7 +115,9 @@ private:
 	static void Save_Registry_Values(HKEY key, char *path, INIClass *ini);
 
 
-	int	Key;
+	/* Ported: this held an HKEY cast down to int.  A handle is pointer-sized; every use of it
+	** already casts back to HKEY, so naming the real type here changes nothing else. */
+	HKEY	Key;
 	bool	IsValid;
 
 	//

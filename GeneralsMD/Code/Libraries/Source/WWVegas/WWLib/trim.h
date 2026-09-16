@@ -45,4 +45,10 @@
 char * strtrim(char * buffer);
 wchar_t * wcstrim(wchar_t * buffer);
 
+#ifndef _WIN32
+/* Ported: WideStringClass holds WCHAR, which is UTF-16 and therefore 16 bits, while wchar_t is 32
+** bits here.  On Windows the two are the same type and one function served both. */
+WCHAR * wcstrim(WCHAR * buffer);
+#endif
+
 #endif

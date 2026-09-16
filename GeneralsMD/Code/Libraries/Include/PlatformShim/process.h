@@ -25,6 +25,18 @@ inline uintptr_t _beginthreadex(void * security, unsigned stack_size,
 	return (uintptr_t)h;
 }
 
+typedef void (__cdecl * _beginthread_proc_type)(void *);
+
+inline uintptr_t _beginthread(_beginthread_proc_type start, unsigned stack_size, void * arglist)
+{
+	// The void-returning form.  CreateThread wants a DWORD-returning entry; the value is discarded
+	// either way, and both return in the same register.
+	return (uintptr_t)CreateThread(nullptr, (SIZE_T)stack_size,
+	                               reinterpret_cast<LPTHREAD_START_ROUTINE>(start),
+	                               arglist, 0, nullptr);
+}
+
+inline void _endthread(void)       { pthread_exit(nullptr); }
 inline void _endthreadex(unsigned) { pthread_exit(nullptr); }
 
 #endif

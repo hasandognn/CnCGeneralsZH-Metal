@@ -458,10 +458,12 @@ inline char * strlwr(char * s)
 inline char * itoa(int value, char * buffer, int radix)
 {
 	// Only the radices the tree passes; anything else is a caller bug rather than a missing case.
-	if      (radix == 10) std::sprintf(buffer, "%d", value);
-	else if (radix == 16) std::sprintf(buffer, "%x", (unsigned)value);
-	else if (radix == 8)  std::sprintf(buffer, "%o", (unsigned)value);
+	char scratch[24];   // widest is octal of a 32-bit value, 11 digits and a sign
+	if      (radix == 10) std::snprintf(scratch, sizeof(scratch), "%d", value);
+	else if (radix == 16) std::snprintf(scratch, sizeof(scratch), "%x", (unsigned)value);
+	else if (radix == 8)  std::snprintf(scratch, sizeof(scratch), "%o", (unsigned)value);
 	else                  Win32Compat_Unimplemented("itoa with a radix other than 8, 10 or 16");
+	std::strcpy(buffer, scratch);
 	return buffer;
 }
 
@@ -561,5 +563,53 @@ struct VS_FIXEDFILEINFO {
 	DWORD dwFileType, dwFileSubtype;
 	DWORD dwFileDateMS, dwFileDateLS;
 };
+
+// ---------------------------------------------------------------------------
+// The remaining Microsoft spellings and the small calls this tree makes.
+// ---------------------------------------------------------------------------
+
+#define _int64    long long
+#define strcmpi   strcasecmp
+#define _strcmpi  strcasecmp
+#define stricoll  strcasecmp
+
+// Windows platform ids, tested by cpudetect.cpp.
+#define VER_PLATFORM_WIN32s         0
+#define VER_PLATFORM_WIN32_WINDOWS  1
+#define VER_PLATFORM_WIN32_NT       2
+
+// FormatMessage, which wwdebug.cpp uses to turn GetLastError into text.
+#define FORMAT_MESSAGE_FROM_SYSTEM     0x00001000u
+#define FORMAT_MESSAGE_IGNORE_INSERTS  0x00000200u
+#define FORMAT_MESSAGE_ALLOCATE_BUFFER 0x00000100u
+
+DWORD FormatMessageA(DWORD flags, LPCVOID source, DWORD message_id, DWORD language_id,
+                     LPSTR buffer, DWORD size, void * arguments);
+#define FormatMessage FormatMessageA
+
+// Named mutexes.  mutex.cpp wants one to keep a second copy of the game off the same install; the
+// shim gives it a process-local one, so the check passes and a second copy is not prevented.
+HANDLE CreateMutexA(LPVOID attributes, BOOL initial_owner, LPCSTR name);
+#define CreateMutex CreateMutexA
+BOOL   ReleaseMutex(HANDLE mutex);
+
+// srandom.cpp stirs free disk space into its seed.
+BOOL GetDiskFreeSpaceA(LPCSTR root, LPDWORD sectors_per_cluster, LPDWORD bytes_per_sector,
+                       LPDWORD free_clusters, LPDWORD total_clusters);
+#define GetDiskFreeSpace GetDiskFreeSpaceA
+
+/* The version-resource calls.  A Mach-O image carries no VERSIONINFO resource, so these report
+** that there is none and the callers take the branch they already have for a file without one. */
+DWORD GetFileVersionInfoSizeA(LPCSTR filename, LPDWORD handle);
+#define GetFileVersionInfoSize GetFileVersionInfoSizeA
+BOOL  GetFileVersionInfoA(LPCSTR filename, DWORD handle, DWORD length, LPVOID data);
+#define GetFileVersionInfo GetFileVersionInfoA
+BOOL  VerQueryValueA(LPCVOID block, LPCSTR sub_block, LPVOID * buffer, UINT * length);
+#define VerQueryValue VerQueryValueA
+
+// The path splitter, which MSVC keeps in <stdlib.h>.
+void _splitpath(const char * path, char * drive, char * dir, char * fname, char * ext);
+void _makepath(char * path, const char * drive, const char * dir,
+               const char * fname, const char * ext);
 
 #endif // WIN32COMPAT_H

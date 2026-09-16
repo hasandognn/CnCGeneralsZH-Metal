@@ -102,7 +102,9 @@ StringClass::Get_String (int length, bool is_temp)
 				//
 				//	Grab this unused buffer for our string
 				//
-				unsigned temp_string=reinterpret_cast<unsigned>(m_TempStrings);
+				/* Ported: this rounds the pool base up to a MAX_TEMP_BYTES*MAX_TEMP_STRING boundary
+				//	and indexes into it, all in an unsigned.  A pointer does not fit in one here. */
+				uintptr_t temp_string=reinterpret_cast<uintptr_t>(m_TempStrings);
 				temp_string+=MAX_TEMP_BYTES*MAX_TEMP_STRING;
 				temp_string&=~(MAX_TEMP_BYTES*MAX_TEMP_STRING-1);
 				temp_string+=index*MAX_TEMP_BYTES;

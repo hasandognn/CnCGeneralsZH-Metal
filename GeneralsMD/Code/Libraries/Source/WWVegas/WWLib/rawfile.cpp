@@ -652,7 +652,12 @@ int RawFileClass::Read(void * buffer, int size)
 			if ((bytesread == 0)&&( ! feof(Handle)))
 				readok=ferror(Handle);
 		#else
-			readok=ReadFile(Handle, buffer, size, &(unsigned long&)bytesread, NULL);
+			/* Ported: this aliased a long as an unsigned long and handed ReadFile its address.
+			** Both are four bytes on Win32; here long is eight and ReadFile writes four, which
+			** would leave the high half of bytesread holding whatever was there before. */
+			DWORD read_this_pass = 0;
+			readok=ReadFile(Handle, buffer, size, &read_this_pass, NULL);
+			bytesread = (long)read_this_pass;
 		#endif
 			
 

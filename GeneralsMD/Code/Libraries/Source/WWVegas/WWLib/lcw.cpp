@@ -124,7 +124,9 @@ int LCW_Uncomp(void const * source, void * dest, unsigned long )
 					word_data  = (word_data << 24) + (word_data << 16) + (word_data << 8) + word_data;
 					source_ptr += 3;
 
-					copy_ptr = dest_ptr + 4 - ((unsigned) dest_ptr & 0x3);
+					/* Ported: the alignment of a pointer, taken by casting it to unsigned.  uintptr_t is the type
+					** that holds a pointer; the low two bits it is after are the same either way. */
+					copy_ptr = dest_ptr + 4 - ((uintptr_t) dest_ptr & 0x3);
 					count -= (copy_ptr - dest_ptr);
 					while (dest_ptr < copy_ptr) *dest_ptr++ = data;
 

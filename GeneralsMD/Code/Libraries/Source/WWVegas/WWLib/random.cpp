@@ -233,20 +233,24 @@ int Random2Class::operator() (int minval, int maxval)
 **	that the algorithm is not vulnerable to being primed with a weak seed
 **	and thus prevents the algorithm from breaking down as a result.
 */
+/* Ported: these are bit patterns, and the ones with the high bit set are above INT_MAX, which a
+** braced initialiser will not narrow into an int on its own.  The cast is the conversion the
+** compiler was already doing; the array stays int so the arithmetic below keeps the exact
+** behaviour the generator was tuned against. */
 int Random3Class::Mix1[20] = {
-	0x0baa96887, 0x01e17d32c, 0x003bcdc3c, 0x00f33d1b2,
-	0x076a6491d, 0x0c570d85d, 0x0e382b1e3, 0x078db4362,
-	0x07439a9d4, 0x09cea8ac5, 0x089537c5c, 0x02588f55d,
-	0x0415b5e1d, 0x0216e3d95, 0x085c662e7, 0x05e8ab368,
-	0x03ea5cc8c, 0x0d26a0f74, 0x0f3a9222b, 0x048aad7e4
+	(int)0xbaa96887u, (int)0x1e17d32cu, (int)0x03bcdc3cu, (int)0x0f33d1b2u,
+	(int)0x76a6491du, (int)0xc570d85du, (int)0xe382b1e3u, (int)0x78db4362u,
+	(int)0x7439a9d4u, (int)0x9cea8ac5u, (int)0x89537c5cu, (int)0x2588f55du,
+	(int)0x415b5e1du, (int)0x216e3d95u, (int)0x85c662e7u, (int)0x5e8ab368u,
+	(int)0x3ea5cc8cu, (int)0xd26a0f74u, (int)0xf3a9222bu, (int)0x48aad7e4u
 };
 
 int Random3Class::Mix2[20] = {
-	0x04b0f3b58, 0x0e874f0c3, 0x06955c5a6, 0x055a7ca46,
-	0x04d9a9d86, 0x0fe28a195, 0x0b1ca7865, 0x06b235751,
-	0x09a997a61, 0x0aa6e95c8, 0x0aaa98ee1, 0x05af9154c,
-	0x0fc8e2263, 0x0390f5e8c, 0x058ffd802, 0x0ac0a5eba,
-	0x0ac4874f6, 0x0a9df0913, 0x086be4c74, 0x0ed2c123b
+	(int)0x4b0f3b58u, (int)0xe874f0c3u, (int)0x6955c5a6u, (int)0x55a7ca46u,
+	(int)0x4d9a9d86u, (int)0xfe28a195u, (int)0xb1ca7865u, (int)0x6b235751u,
+	(int)0x9a997a61u, (int)0xaa6e95c8u, (int)0xaaa98ee1u, (int)0x5af9154cu,
+	(int)0xfc8e2263u, (int)0x390f5e8cu, (int)0x58ffd802u, (int)0xac0a5ebau,
+	(int)0xac4874f6u, (int)0xa9df0913u, (int)0x86be4c74u, (int)0xed2c123bu
 };
 
 
