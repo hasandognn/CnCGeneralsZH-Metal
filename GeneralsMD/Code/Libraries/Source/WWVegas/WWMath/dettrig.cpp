@@ -82,7 +82,7 @@ enum
 	 4194303, for 2.8e12.  gentrigtables.py asserts those two step sizes, so a
 	 regenerated table cannot quietly outgrow this. */
 
-typedef __int64 DetInt64;
+typedef int64_t DetInt64;
 
 static const double TURN_SCALE				= 4294967296.0;								// 2^32, one turn
 static const double TURNS_PER_RADIAN	= 0.15915494309189533577;			// 1 / (2 PI)

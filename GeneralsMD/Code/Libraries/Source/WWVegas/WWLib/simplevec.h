@@ -254,6 +254,15 @@ inline bool SimpleVecClass<T>::Uninitialised_Grow(int newsize)
 */
 template <class T> class SimpleDynVecClass : public SimpleVecClass<T>
 {
+protected:
+
+	/* Ported: Vector and VectorMax are members of the dependent base SimpleVecClass<T>.  MSVC
+	** found them by unqualified lookup; a two-phase compiler does not look into a dependent base
+	** at all.  Naming them once here leaves every use below exactly as it was written. */
+	using SimpleVecClass<T>::Vector;
+	using SimpleVecClass<T>::VectorMax;
+	using SimpleVecClass<T>::Length;
+
 public:
 
 	SimpleDynVecClass(int size = 0);

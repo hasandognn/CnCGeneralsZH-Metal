@@ -25,6 +25,7 @@
 
 #include "always.h"
 #include "thread.h"
+#include <atomic>
 
 
 // Always use mutex or critical section when accessing the same data from multiple threads!
@@ -117,7 +118,10 @@ public:
 
 class FastCriticalSectionClass
 {
-	unsigned Flag;
+	/* Ported: was a plain unsigned spun on with "lock bts dword ptr [ebx], 0".  std::atomic gives
+	** the same instruction on x86 and the equivalent exclusive-load pair on ARM64, and it says what
+	** the field is for.  Same width and alignment as the unsigned it replaces. */
+	std::atomic<unsigned> Flag;
 
 public:
 	// Name can (and usually should) be NULL. Use name only if you wish to create a globally unique mutex
@@ -129,41 +133,18 @@ public:
 	public:
 		__forceinline LockClass(FastCriticalSectionClass& critical_section) : cs(critical_section)
 		{
-		  unsigned& nFlag=cs.Flag;
-
-		  #define ts_lock _emit 0xF0
-		  assert(((unsigned)&nFlag % 4) == 0);
-
-      // I'm terribly sorry for these emits in here but
-      // VC won't inline any functions that have labels in them...
-
-      // Had to remove the emits back to normal
-      // ASM statements because sometimes the jump
-      // would be 1 byte off....
-      
-		  __asm mov ebx, [nFlag]
-		  __asm ts_lock
-		  __asm bts dword ptr [ebx], 0
-		  __asm jnc BitSet
-      //__asm _emit 0x73
-      //__asm _emit 0x0f
-
-		  The_Bit_Was_Previously_Set_So_Try_Again:
-		    ThreadClass::Switch_Thread();
-		  __asm mov ebx, [nFlag]
-		  __asm ts_lock
-		  __asm bts dword ptr [ebx], 0
-		  __asm jc  The_Bit_Was_Previously_Set_So_Try_Again
-      //_asm _emit 0x72
-      //_asm _emit 0xf1
-
-      BitSet:
-        ;
+			/* Ported: the original was "lock bts [flag], 0" retried around
+			** ThreadClass::Switch_Thread(), written with __asm because VC would not inline a
+			** function containing a label.  fetch_or is that instruction, and the acquire ordering
+			** is the barrier the lock prefix carried implicitly. */
+			while (cs.Flag.fetch_or(1u, std::memory_order_acquire) & 1u) {
+				ThreadClass::Switch_Thread();
+			}
 		}
 
 		~LockClass()
 		{
-      cs.Flag=0;
+			cs.Flag.store(0u, std::memory_order_release);
 		}
     
 	private:

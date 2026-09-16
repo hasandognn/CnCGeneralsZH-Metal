@@ -53,7 +53,7 @@
 #include "bittype.h"
 #include "wwdebug.h"
 #include "mutex.h"
-#include <new.h>
+#include <new>
 #include <stdlib.h>
 #include <stddef.h>
 
@@ -157,8 +157,10 @@ private:
 ** Macro to declare the allocator for your class.  Put this in the cpp file for
 ** the class.
 */
+/* Ported: this defines the static member of an explicit specialisation, which the standard spells
+** with a leading template<>.  MSVC accepted it without. */
 #define DEFINE_AUTO_POOL(T,BLOCKSIZE) \
-ObjectPoolClass<T,BLOCKSIZE> AutoPoolClass<T,BLOCKSIZE>::Allocator;
+template<> ObjectPoolClass<T,BLOCKSIZE> AutoPoolClass<T,BLOCKSIZE>::Allocator;
 
 
 /***********************************************************************************************

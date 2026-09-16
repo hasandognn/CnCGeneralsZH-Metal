@@ -42,6 +42,31 @@
 
 #include <assert.h>
 
+/* Ported: MSVC reached size_t, ptrdiff_t and the fixed-width integers through windows.h, which
+** every translation unit pulled in.  Off Windows nothing does, so they come from the standard
+** headers that actually define them.  This header is included everywhere, which is why it is here
+** and not in the 99 files that were missing size_t. */
+#include <cstddef>
+#include <cstdint>
+
+#ifndef _MSC_VER
+/* Ported: MSVC calling-convention keywords.  ARM64 has one calling convention, so these carry no
+** information here; they are defined away rather than deleted from the ~600 declarations that
+** spell them.  __forceinline keeps its meaning because the engine leans on it in the math headers. */
+#ifndef __cdecl
+#define __cdecl
+#endif
+#ifndef __stdcall
+#define __stdcall
+#endif
+#ifndef __fastcall
+#define __fastcall
+#endif
+#ifndef __forceinline
+#define __forceinline inline __attribute__((always_inline))
+#endif
+#endif // !_MSC_VER
+
 // Disable warning about exception handling not being enabled. It's used as part of STL - in a part of STL we don't use.
 #pragma warning(disable : 4530)
 
@@ -93,7 +118,7 @@
 	// additional overloads for 'placement new'
 	//inline void* __cdecl operator new							(size_t s, void *p) { return p; }
 	//inline void __cdecl operator delete						(void *, void *p)		{ }
-#if !defined(_MSC_VER) || _MSC_VER < 1300	// VC7+ <new> already defines array placement new/delete
+#if defined(_MSC_VER) && _MSC_VER < 1300	// VC7+ and every conforming <new> already define array placement new/delete
 	inline void* __cdecl operator new[]						(size_t s, void *p) { return p; }
 	inline void __cdecl operator delete[]					(void *, void *p)		{ }
 #endif

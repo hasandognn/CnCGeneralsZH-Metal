@@ -61,7 +61,7 @@
 #include	<assert.h>
 #include	<stdlib.h>
 #include <string.h>
-#include <new.h>
+#include <new>
 
 #ifdef _MSC_VER
 #pragma warning (disable : 4702) // unreachable code, happens with some uses of these templates
@@ -486,6 +486,17 @@ bool VectorClass<T>::Resize(int newsize, T const * array)
 template<class T>
 class DynamicVectorClass : public VectorClass<T>
 {
+protected:
+
+	/* Ported: these live in the dependent base VectorClass<T>.  MSVC found them by
+	** unqualified lookup; a two-phase compiler does not look into a dependent base at all.
+	** Naming them once here leaves every use below exactly as it was written. */
+	using VectorClass<T>::Vector;
+	using VectorClass<T>::VectorMax;
+	using VectorClass<T>::IsValid;
+	using VectorClass<T>::IsAllocated;
+	using VectorClass<T>::Length;
+
 	public:
 		DynamicVectorClass(unsigned size=0, T const * array=0);
 
