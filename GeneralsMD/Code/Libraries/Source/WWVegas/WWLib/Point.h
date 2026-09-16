@@ -130,6 +130,12 @@ class TPoint3D : public TPoint2D<T> {
 		typedef TPoint2D<T> BASECLASS;
 
 	public:
+		/* Ported: X and Y are members of the dependent base TPoint2D<T>, which a two-phase compiler
+		** will not find by unqualified lookup.  They are public there, so they are named in a
+		** public section here. */
+		using TPoint2D<T>::X;
+		using TPoint2D<T>::Y;
+
 		TPoint3D(void) {}		// Default constructor does nothing by design.
 		TPoint3D(T x, T y, T z) : TPoint2D<T>(x, y), Z(z) {}
 		TPoint3D(BASECLASS const & rvalue) : TPoint2D<T>(rvalue), Z(0) {}

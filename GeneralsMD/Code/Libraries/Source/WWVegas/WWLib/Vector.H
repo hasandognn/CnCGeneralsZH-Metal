@@ -495,6 +495,11 @@ protected:
 	using VectorClass<T>::VectorMax;
 	using VectorClass<T>::IsValid;
 	using VectorClass<T>::IsAllocated;
+
+public:
+
+	// Length() is public in the base, so it is named in a public section here: a using-declaration
+	// takes the access of the section it sits in, not the one the member had.
 	using VectorClass<T>::Length;
 
 	public:

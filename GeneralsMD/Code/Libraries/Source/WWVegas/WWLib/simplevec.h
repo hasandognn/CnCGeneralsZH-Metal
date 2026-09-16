@@ -261,6 +261,10 @@ protected:
 	** at all.  Naming them once here leaves every use below exactly as it was written. */
 	using SimpleVecClass<T>::Vector;
 	using SimpleVecClass<T>::VectorMax;
+
+public:
+
+	// Length() is public in the base; a using-declaration takes the access of its section.
 	using SimpleVecClass<T>::Length;
 
 public:

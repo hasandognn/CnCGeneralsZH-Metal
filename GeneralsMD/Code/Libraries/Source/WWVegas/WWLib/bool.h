@@ -37,7 +37,11 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#if !defined(TRUE_FALSE_DEFINED) && !defined(__BORLANDC__) && (_MSC_VER < 1100) && !defined(__WATCOMC__)
+/* Ported: the test was (_MSC_VER < 1100), which an undefined _MSC_VER makes 0 < 1100 - true.  Off
+** Windows that turned this block on and it tried to typedef int over the bool keyword.  Requiring
+** _MSC_VER to be defined keeps the block for the ancient compiler it was written for and off
+** everywhere else; a compiler that can build this tree has had bool since 1998. */
+#if !defined(TRUE_FALSE_DEFINED) && !defined(__BORLANDC__) && defined(_MSC_VER) && (_MSC_VER < 1100) && !defined(__WATCOMC__)
 #define TRUE_FALSE_DEFINED
 
 /**********************************************************************

@@ -486,4 +486,80 @@ struct IMAGE_FILE_HEADER {
 };
 typedef IMAGE_FILE_HEADER * PIMAGE_FILE_HEADER;
 
+// ---------------------------------------------------------------------------
+// Rotates.  MSVC intrinsics; clang has builtins for the same thing.
+// ---------------------------------------------------------------------------
+
+inline unsigned int  _rotl (unsigned int v, int n)       { return __builtin_rotateleft32(v, (unsigned)n); }
+inline unsigned int  _rotr (unsigned int v, int n)       { return __builtin_rotateright32(v, (unsigned)n); }
+inline unsigned long _lrotl(unsigned long v, int n)
+{
+	// unsigned long is 64 bits here and 32 on Win32.  The callers (crc.h) feed it 32-bit values
+	// and expect a 32-bit rotate, so that is what this does; rotating at 64 would fold different
+	// bits in and change every checksum.
+	return (unsigned long)__builtin_rotateleft32((uint32_t)v, (unsigned)n);
+}
+inline unsigned long _lrotr(unsigned long v, int n)
+{
+	return (unsigned long)__builtin_rotateright32((uint32_t)v, (unsigned)n);
+}
+
+// ---------------------------------------------------------------------------
+// Odds and ends the tree reaches for by their Microsoft names.
+// ---------------------------------------------------------------------------
+
+#define _vsnprintf  vsnprintf
+#define _snprintf   snprintf
+
+#define _MAX_DRIVE  3
+#define _MAX_DIR    256
+#define _MAX_FNAME  256
+#define _MAX_EXT    256
+#define _MAX_PATH   MAX_PATH
+
+inline int _wcsicmp(const WCHAR * a, const WCHAR * b)
+{
+	// UTF-16, and ASCII-only folding, which is what the callers compare: file names and tags.
+	while (*a != 0 && *b != 0) {
+		WCHAR ca = (*a >= 'A' && *a <= 'Z') ? (WCHAR)(*a + 32) : *a;
+		WCHAR cb = (*b >= 'A' && *b <= 'Z') ? (WCHAR)(*b + 32) : *b;
+		if (ca != cb) return (int)ca - (int)cb;
+		++a; ++b;
+	}
+	return (int)*a - (int)*b;
+}
+
+inline void DebugBreak(void) { __builtin_debugtrap(); }
+
+// The multimedia timer resolution calls.  Mach timers do not have a resolution to raise, and
+// timeGetTime above is already nanosecond-sourced, so there is nothing for these to do.
+inline DWORD timeBeginPeriod(UINT) { return 0; }
+inline DWORD timeEndPeriod(UINT)   { return 0; }
+
+// ---------------------------------------------------------------------------
+// Handle types for the Windows-only subsystems.  Declared so the files that hold one compile;
+// the functions that would produce one are not here, and the callers are guarded or unused.
+// ---------------------------------------------------------------------------
+
+typedef HANDLE HRSRC;
+typedef HANDLE HGLOBAL;
+typedef HANDLE HLOCAL;
+typedef HANDLE HACCEL;
+typedef HANDLE HICON;
+typedef HANDLE HCURSOR;
+typedef HANDLE HMENU;
+typedef HANDLE HDC;
+typedef HANDLE HBITMAP;
+typedef HANDLE HPALETTE;
+typedef HANDLE HFONT;
+
+struct VS_FIXEDFILEINFO {
+	DWORD dwSignature, dwStrucVersion;
+	DWORD dwFileVersionMS, dwFileVersionLS;
+	DWORD dwProductVersionMS, dwProductVersionLS;
+	DWORD dwFileFlagsMask, dwFileFlags, dwFileOS;
+	DWORD dwFileType, dwFileSubtype;
+	DWORD dwFileDateMS, dwFileDateLS;
+};
+
 #endif // WIN32COMPAT_H
