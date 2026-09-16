@@ -41,26 +41,44 @@
 #ifndef BITTYPE_H
 #define BITTYPE_H
 
-typedef unsigned char	uint8;
-typedef unsigned short	uint16;
-typedef unsigned long	uint32;
+/* Ported: these were spelled with "long", which is 32 bits on Win32 and 64 bits on every LP64
+** platform.  uint32 is a file format here - it is what the save games, the .big indexes and the
+** network packets are written in - so it is named by width rather than by C type.  Fixing it is
+** not optional off Windows: at 64 bits every one of those layouts moves. */
+
+#include <cstdint>
+
+typedef uint8_t         uint8;
+typedef uint16_t        uint16;
+typedef uint32_t        uint32;
 typedef unsigned int    uint;
 
-typedef signed char		sint8;
-typedef signed short		sint16;
-typedef signed long		sint32;
-typedef signed int      sint;
+typedef int8_t          sint8;
+typedef int16_t         sint16;
+typedef int32_t         sint32;
+typedef int             sint;
 
-typedef float				float32;
-typedef double				float64;
+typedef uint64_t        uint64;
+typedef int64_t         sint64;
 
+typedef float           float32;
+typedef double          float64;
+
+/* The Win32 spellings.  windows.h declares them on Windows; off it they come from the shim, which
+** is the single place their widths are decided.  Defining them a second time here is what made
+** DWORD 64 bits wide in this translation unit and 32 in the next one. */
+#ifdef _WIN32
 typedef unsigned long   DWORD;
-typedef unsigned short	WORD;
+typedef unsigned short  WORD;
 typedef unsigned char   BYTE;
 typedef int             BOOL;
-typedef unsigned short	USHORT;
-typedef const char *		LPCSTR;
+typedef unsigned short  USHORT;
+typedef const char *    LPCSTR;
 typedef unsigned int    UINT;
 typedef unsigned long   ULONG;
+#else
+#include "Platform/Win32Compat.h"
+typedef unsigned short  USHORT;
+#endif
 
 #endif //BITTYPE_H

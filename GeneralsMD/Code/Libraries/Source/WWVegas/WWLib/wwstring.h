@@ -46,7 +46,11 @@
 #include "win.h"
 #include <string.h>
 #include <stdarg.h>
+#ifdef _WIN32
 #include <tchar.h>
+#else
+#include "Platform/tchar.h"
+#endif
 #include "trim.h"
 #include "wwdebug.h"
 #ifdef _UNIX

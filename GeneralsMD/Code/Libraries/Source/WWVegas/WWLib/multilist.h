@@ -487,6 +487,15 @@ public:
 template <class ObjectType>
 class PriorityMultiListIterator : public MultiListIterator<ObjectType>
 {
+protected:
+
+	/* Ported: First and CurNode reach through the dependent base MultiListIterator<ObjectType>
+	** into GenericMultiListIterator, which a two-phase compiler will not do by unqualified
+	** lookup. */
+	using MultiListIterator<ObjectType>::First;
+	using MultiListIterator<ObjectType>::CurNode;
+	using MultiListIterator<ObjectType>::Remove_Current_Object;
+
 public:
 	PriorityMultiListIterator(MultiListClass<ObjectType> *list)
 		:	OriginalHead (NULL),

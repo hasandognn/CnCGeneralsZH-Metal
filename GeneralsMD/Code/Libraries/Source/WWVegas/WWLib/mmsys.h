@@ -44,8 +44,14 @@
 ** This header just includes mmsystem.h with warning 4201 disabled
 */
 
+#ifdef _WIN32
 #pragma warning(disable:4201)
 #include <mmsystem.h>
 #pragma warning(default:4201)
+#else
+/* Ported: the only thing this tree wants out of mmsystem.h is timeGetTime, which the shim
+** declares alongside the rest of the clocks.  See Platform/Win32Compat.h. */
+#include "Platform/Win32Compat.h"
+#endif
 
 #endif // MMSYS_H

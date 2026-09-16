@@ -59,7 +59,13 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
+#ifdef _WIN32
 #include	<windows.h>
+#else
+/* Ported: off Windows this is the shim in Libraries/Include/Platform, which declares the forty-odd
+** Win32 functions this tree actually calls and nothing else.  See Win32Compat.h. */
+#include	"Platform/Win32Compat.h"
+#endif
 //#include <mmsystem.h>
 //#include	<windowsx.h>
 //#include	<winnt.h>

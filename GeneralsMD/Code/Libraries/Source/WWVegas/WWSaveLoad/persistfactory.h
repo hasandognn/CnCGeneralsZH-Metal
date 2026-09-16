@@ -130,9 +130,19 @@ SimplePersistFactoryClass<T,CHUNKID>::Load(ChunkLoadClass & cload) const
 template<class T, int CHUNKID> void
 SimplePersistFactoryClass<T,CHUNKID>::Save(ChunkSaveClass & csave,PersistClass * obj) const 
 {
-	uint32 objptr = (uint32)obj;
+	/* Ported: this wrote the pointer as a uint32 while Load reads sizeof(T *) back out of the same
+	** chunk.  On Win32 both are four bytes and the asymmetry never showed; on a 64-bit build the
+	** writer puts four bytes down and the reader takes eight, and the truncation would also let two
+	** distinct objects share an identity token, which is the one thing this value is for - it is
+	** matched against Register_Pointer on load and never dereferenced.
+	**
+	** Writing it at pointer width makes the two sides agree and the token unique again.  It does
+	** mean a save written by a 64-bit build has a wider field here than one written by the 32-bit
+	** Windows build, so save games do not cross between them.  Nothing here goes over the wire:
+	** the lockstep protocol sends commands, not object graphs, so multiplayer is unaffected. */
+	PersistClass * objptr = obj;
 	csave.Begin_Chunk(SIMPLEFACTORY_CHUNKID_OBJPOINTER);
-	csave.Write(&objptr,sizeof(uint32));
+	csave.Write(&objptr,sizeof(objptr));
 	csave.End_Chunk();
 
 	csave.Begin_Chunk(SIMPLEFACTORY_CHUNKID_OBJDATA);

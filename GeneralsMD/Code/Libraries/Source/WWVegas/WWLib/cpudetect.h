@@ -44,6 +44,7 @@
 #define WWLIB_CPU_DETECT_H__
 
 #include "always.h"
+#include "bittype.h"	// sint64/uint64, used below
 #include "wwstring.h"
 
 #ifdef WIN32
