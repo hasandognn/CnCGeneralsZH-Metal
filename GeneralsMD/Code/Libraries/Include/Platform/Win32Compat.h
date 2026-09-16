@@ -728,4 +728,149 @@ inline WCHAR * wcsstr(WCHAR * haystack, const WCHAR * needle)
 	return const_cast<WCHAR *>(wcsstr(const_cast<const WCHAR *>(haystack), needle));
 }
 
+// ---------------------------------------------------------------------------
+// Structured exception records.
+//
+// StackDump.h declares a handler taking one of these.  There is no SEH here - the crash path off
+// Windows is a signal handler - so the layout is declared for the declaration's sake, and the
+// handler stays the empty inline the header already provides.
+// ---------------------------------------------------------------------------
+
+struct EXCEPTION_RECORD {
+	DWORD  ExceptionCode, ExceptionFlags;
+	struct EXCEPTION_RECORD * ExceptionRecord;
+	LPVOID ExceptionAddress;
+	DWORD  NumberParameters;
+	ULONG_PTR ExceptionInformation[15];
+};
+
+struct CONTEXT { DWORD ContextFlags; };
+
+struct EXCEPTION_POINTERS {
+	EXCEPTION_RECORD * ExceptionRecord;
+	CONTEXT *          ContextRecord;
+};
+typedef EXCEPTION_POINTERS * PEXCEPTION_POINTERS;
+
+// ---------------------------------------------------------------------------
+// The command line.
+//
+// EarlyCommandLine reads the wide command line on purpose: WinMain tokenises lpCmdLine in place,
+// so by the time anything asks, the ANSI copy has been cut down to the exe name and the first
+// switch.  Nothing truncates it here, but the callers want a wide string, so this rebuilds one
+// from argv.  wchar_t rather than WideChar: this is an OS interface, not game string data, and
+// none of it reaches a save or the wire.
+// ---------------------------------------------------------------------------
+
+const wchar_t * GetCommandLineW(void);
+LPSTR           GetCommandLineA(void);
+#define GetCommandLine GetCommandLineA
+
+// ---------------------------------------------------------------------------
+// The last of the Microsoft CRT and Win32 spellings this tree reaches for.
+// ---------------------------------------------------------------------------
+
+#ifndef __max
+#define __max(a, b)  (((a) > (b)) ? (a) : (b))
+#endif
+#ifndef __min
+#define __min(a, b)  (((a) < (b)) ? (a) : (b))
+#endif
+
+#define _isnan(x)     std::isnan(x)
+#define _finite(x)    std::isfinite(x)
+#define _hypot        hypot
+
+#define LOBYTE(w)     ((BYTE)((w) & 0xFF))
+#define HIBYTE(w)     ((BYTE)(((w) >> 8) & 0xFF))
+#define LOWORD(l)     ((WORD)((DWORD_PTR)(l) & 0xFFFF))
+#define HIWORD(l)     ((WORD)(((DWORD_PTR)(l) >> 16) & 0xFFFF))
+#define MAKELONG(a,b) ((LONG)(((WORD)(a)) | (((DWORD)((WORD)(b))) << 16)))
+
+/* The x87 control word.
+ *
+ * FPUControl.cpp pins the precision to 24 bits so that x87's 80-bit intermediates cannot round a
+ * second time and give two machines different answers.  arm64 has no such mode: every operation is
+ * done at the declared width already, which is the behaviour those calls were buying.  So these
+ * report the state as set rather than pretending to change anything, and the guarantee holds by
+ * construction instead of by configuration.
+ */
+#define _MCW_PC       0x00030000u
+#define _MCW_RC       0x00000300u
+#define _MCW_EM       0x0008001Fu
+#define _PC_24        0x00020000u
+#define _PC_53        0x00010000u
+#define _PC_64        0x00000000u
+#define _RC_NEAR      0x00000000u
+#define _RC_CHOP      0x00000300u
+
+inline unsigned int _controlfp(unsigned int new_value, unsigned int mask)
+{
+	(void)new_value; (void)mask;
+	return _PC_24 | _RC_NEAR;
+}
+inline void _fpreset(void) { }
+inline void _clearfp(void) { }
+
+// Virtual key codes.  Only the handful the GUI tests by name.
+#define VK_RETURN     0x0D
+#define VK_ESCAPE     0x1B
+#define VK_BACK       0x08
+#define VK_TAB        0x09
+#define VK_SPACE      0x20
+#define VK_SHIFT      0x10
+#define VK_CONTROL    0x11
+#define VK_MENU       0x12
+#define VK_LEFT       0x25
+#define VK_UP         0x26
+#define VK_RIGHT      0x27
+#define VK_DOWN       0x28
+#define VK_DELETE     0x2E
+#define VK_HOME       0x24
+#define VK_END        0x23
+
+#define LOCALE_USER_DEFAULT  0x0400
+
+typedef HANDLE HKL;              // a keyboard layout
+typedef void * LPITEMIDLIST;     // a shell item id list
+
+struct GUID {
+	DWORD Data1;
+	WORD  Data2, Data3;
+	BYTE  Data4[8];
+};
+typedef GUID * LPGUID;
+typedef GUID   IID;
+typedef GUID   CLSID;
+
+typedef WCHAR * PWSTR;
+typedef const WCHAR * PCWSTR;
+typedef char * LPTSTR;
+typedef const char * LPCTSTR;
+
+// Parameter-direction annotations, which are nothing but documentation.
+#ifndef IN
+#define IN
+#endif
+#ifndef OUT
+#define OUT
+#endif
+
+// The double-click interval, in milliseconds.  macOS exposes this through NSEvent; the platform
+// layer sets it there.  This is the Windows default until it does.
+inline UINT GetDoubleClickTime(void) { return 500; }
+
+// Font resources are a Windows concept; Core Text loads the game's fonts on this platform, and the
+// platform layer owns that.
+inline BOOL AddFontResourceA(LPCSTR)    { return TRUE; }
+inline BOOL RemoveFontResourceA(LPCSTR) { return TRUE; }
+#define AddFontResource    AddFontResourceA
+#define RemoveFontResource RemoveFontResourceA
+
+inline BOOL SetWindowTextA(HWND, LPCSTR) { return TRUE; }
+#define SetWindowText SetWindowTextA
+
+DWORD FormatMessageW(DWORD flags, LPCVOID source, DWORD message_id, DWORD language_id,
+                     WCHAR * buffer, DWORD size, void * arguments);
+
 #endif // WIN32COMPAT_H

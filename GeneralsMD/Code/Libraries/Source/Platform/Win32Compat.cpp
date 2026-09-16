@@ -28,6 +28,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cmath>
 #include <ctime>
 #include <string>
 
@@ -46,6 +47,7 @@
 
 #include <mach/mach_time.h>
 #include <mach-o/dyld.h>
+#include <crt_externs.h>
 
 // ---------------------------------------------------------------------------
 // Errors
@@ -1004,4 +1006,56 @@ void _makepath(char * path, const char *, const char * dir, const char * fname, 
 	if (dir   != nullptr && dir[0]   != 0) std::strcat(path, dir);
 	if (fname != nullptr && fname[0] != 0) std::strcat(path, fname);
 	if (ext   != nullptr && ext[0]   != 0) std::strcat(path, ext);
+}
+
+// ---------------------------------------------------------------------------
+// The command line, rebuilt from argv.
+// ---------------------------------------------------------------------------
+
+static std::string BuildCommandLine(void)
+{
+	int     argc = *_NSGetArgc();
+	char ** argv = *_NSGetArgv();
+	std::string line;
+	for (int i = 0; i < argc; ++i) {
+		if (i != 0) line += ' ';
+		// The shell already split these; an argument carrying a space is quoted again so the
+		// callers' tokeniser puts it back together the way Windows would have handed it over.
+		const bool spaced = std::strchr(argv[i], ' ') != nullptr;
+		if (spaced) line += '"';
+		line += argv[i];
+		if (spaced) line += '"';
+	}
+	return line;
+}
+
+LPSTR GetCommandLineA(void)
+{
+	static std::string line = BuildCommandLine();
+	return const_cast<LPSTR>(line.c_str());
+}
+
+const wchar_t * GetCommandLineW(void)
+{
+	static std::wstring wide = []() {
+		std::string narrow = BuildCommandLine();
+		std::wstring out;
+		out.reserve(narrow.size());
+		// A path and a handful of switches; anything outside ASCII comes through as the bytes it
+		// was, which is what the option matching above compares.
+		for (unsigned char c : narrow) out.push_back((wchar_t)c);
+		return out;
+	}();
+	return wide.c_str();
+}
+
+DWORD FormatMessageW(DWORD, LPCVOID, DWORD message_id, DWORD, WCHAR * buffer, DWORD size, void *)
+{
+	if (buffer == nullptr || size == 0) return 0;
+	const char * text = std::strerror((int)message_id);
+	if (text == nullptr) text = "unknown error";
+	DWORD i = 0;
+	for (; text[i] != 0 && i + 1 < size; ++i) buffer[i] = (WCHAR)(unsigned char)text[i];
+	buffer[i] = 0;
+	return i;
 }

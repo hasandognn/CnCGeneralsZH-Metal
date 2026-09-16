@@ -152,7 +152,9 @@ private:
 	size_t operator()(ConstGameWindowPtr p) const
 	{
 		std::hash<UnsignedInt> hasher;
-		return hasher((UnsignedInt)p);
+		// Ported: a pointer, hashed through a 32-bit int.  Pointer-sized, or two distinct
+		// windows collide in the map whenever their low halves agree.
+		return hasher((UnsignedIntPtr)p);
 	}
 	};
 
