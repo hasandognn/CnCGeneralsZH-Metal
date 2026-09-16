@@ -96,7 +96,7 @@ class ThingTemplate;
 class GhostObject;
 class CommandButton;
 
-enum CommandSourceType;
+enum CommandSourceType : int;
 
 // ----------------------------------------------------------------------------------------------
 enum ValueOrThreat

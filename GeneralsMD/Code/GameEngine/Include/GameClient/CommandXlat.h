@@ -32,7 +32,7 @@
 
 #include "GameClient/InGameUI.h"
 
-enum GUICommandType;
+enum GUICommandType : int;
 
 //-----------------------------------------------------------------------------
 class CommandTranslator : public GameMessageTranslator
@@ -84,7 +84,7 @@ private:
 };
 
 
-enum FilterTypes
+enum FilterTypes : int
 {
 	FT_NULL_FILTER=0,
 	// The following are screen filter shaders, that modify the rendered viewport after it is drawn.
@@ -95,7 +95,7 @@ enum FilterTypes
 	FT_MAX
 };
 
-enum FilterModes
+enum FilterModes : int
 {
 	FM_NULL_MODE = 0,
 

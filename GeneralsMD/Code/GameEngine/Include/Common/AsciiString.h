@@ -99,6 +99,19 @@ private:
 		// char m_stringdata[];
 
 		inline char* peek() { return (char*)(this+1); }
+
+		/* Ported: the reference count was adjusted with InterlockedIncrement((long *)&m_refCount),
+		** which is a four byte read-modify-write at offset zero - across m_refCount AND
+		** m_numCharsAllocated.  On Win32 that is safe only by accident: little-endian puts the
+		** count in the low half, so the carry reaches the length beside it only if a string ever
+		** passes 65535 references.  A decrement below zero borrows from it in the same way.
+		**
+		** On a 64-bit build "long" is eight bytes, so the same cast would read and write four bytes
+		** past the struct, into the string data itself.  These do the atomic on the field that is
+		** actually there, which touches nothing beside it and has no reference ceiling.  The struct
+		** layout is unchanged. */
+		inline void add_ref(void)  { __atomic_add_fetch(&m_refCount, 1, __ATOMIC_SEQ_CST); }
+		inline unsigned short release_ref(void) { return __atomic_sub_fetch(&m_refCount, 1, __ATOMIC_SEQ_CST); }
 	};
 
 	#ifdef _DEBUG
@@ -379,7 +392,7 @@ inline AsciiString::AsciiString(const AsciiString& stringSrc) : m_data(stringSrc
 	if (m_data)
 		// ++m_data->m_refCount;
     // yes, I know it's not a DWord but we're incrementing so we're safe
-    InterlockedIncrement((long *)&m_data->m_refCount);
+    m_data->add_ref();
 	validate();
 }
 
@@ -391,7 +404,7 @@ inline void AsciiString::releaseBuffer()
 	validate();
 	if (m_data)
 	{
-    InterlockedDecrement((long *)&m_data->m_refCount);
+    m_data->release_ref();
 		if (!m_data->m_refCount)
 			freeBytes();
 		m_data = 0;
@@ -456,14 +469,14 @@ inline void AsciiString::set(const AsciiString& stringSrc)
     // from the same thread which is illegal using fast CS's
 		if (m_data)
     {
-      InterlockedDecrement((long *)&m_data->m_refCount);
+      m_data->release_ref();
 		  if (!m_data->m_refCount)
 			  freeBytes();
     }
 
 		m_data = stringSrc.m_data;
 		if (m_data)
-      InterlockedIncrement((long *)&m_data->m_refCount);
+      m_data->add_ref();
 	}
 	validate();
 }

@@ -86,9 +86,9 @@ class SpecialPowerModule;
 
 class BattlePlanBonuses;
 
-enum BattlePlanStatus;
-enum UpgradeStatusType;
-enum CommandSourceType;
+enum BattlePlanStatus : int;
+enum UpgradeStatusType : int;
+enum CommandSourceType : int;
 
 enum ScienceAvailabilityType
 {
@@ -131,7 +131,7 @@ Bool UnitCapRefuses( Int unitsTowardCap, Int unitsItAdds, UnsignedInt unitCap );
 // Pro Rules, PRO-RULES.md: what every skirmish and network match refuses whoever plays it.
 // GameLogic::isProRules() says whether a match is under them; these say what they cover, by name
 // or by type, so a test can ask them without a match.
-enum SpecialPowerType;
+enum SpecialPowerType : int;
 class Player;
 Bool ProRulesBanThing( const AsciiString &templateName );
 Bool ProRulesExemptSuperweapon( const AsciiString &templateName );

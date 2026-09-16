@@ -878,7 +878,9 @@ extern void userMemoryAdjustPoolSize(const char *poolName, Int& initialAllocatio
 	// additional overloads for 'placement new'
 	//inline void* __cdecl operator new							(size_t s, void *p) { return p; }
 	//inline void __cdecl operator delete						(void *, void *p)		{ }
-	#if _MSC_VER < 1300
+	/* Ported: an undefined _MSC_VER makes this 0 < 1300 - true - so off Windows the block turned
+	** on and redefined what libc++'s <new> already declares.  Same guard always.h needed. */
+	#if defined(_MSC_VER) && _MSC_VER < 1300
 	// vcruntime declares the placement array forms itself now, exactly as
 	// WWLib/always.h already had to work around.
 	inline void* __cdecl operator new[]						(size_t s, void *p) { return p; }

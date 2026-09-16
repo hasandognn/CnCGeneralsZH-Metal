@@ -45,6 +45,12 @@
 
 // FORWARD DECLARATIONS ///////////////////////////////////////////////////////////////////////////
 class Drawable;
+/* Ported: View names these as "enum FilterModes" before CommandXlat.h defines them.  MSVC took an
+** elaborated enum specifier as a forward declaration; standard C++ needs a real one, with the
+** underlying type, and the definitions carry the same : int. */
+enum FilterModes : int;
+enum FilterTypes : int;
+
 class ViewLocation;
 class Thing;
 class Waypoint;

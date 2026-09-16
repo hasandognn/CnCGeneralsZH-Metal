@@ -109,18 +109,18 @@ class TempWeaponBonusHelper;
 class ObjectWeaponStatusHelper;
 class ObjectDefectionHelper;
 
-enum CommandSourceType;
-enum HackerAttackMode;
-enum NameKeyType;
-enum SpecialPowerType;
-enum WeaponBonusConditionType;
-enum WeaponChoiceCriteria;
-enum WeaponSetConditionType;
-enum WeaponSetType;
-enum ArmorSetType;
-enum WeaponStatus;
-enum RadarPriorityType;
-enum CanAttackResult;
+enum CommandSourceType : int;
+enum HackerAttackMode : int;
+enum NameKeyType : int;
+enum SpecialPowerType : int;
+enum WeaponBonusConditionType : int;
+enum WeaponChoiceCriteria : int;
+enum WeaponSetConditionType : int;
+enum WeaponSetType : int;
+enum ArmorSetType : int;
+enum WeaponStatus : int;
+enum RadarPriorityType : int;
+enum CanAttackResult : int;
 
 // For ObjectStatusTypes
 #include "Common/ObjectStatusTypes.h"

@@ -1,0 +1,8 @@
+#ifndef WIN32COMPAT_SHIM_HASH_SET
+#define WIN32COMPAT_SHIM_HASH_SET
+#include <unordered_set>
+namespace stdext {
+	template<class K, class H = std::hash<K>, class E = std::equal_to<K>>
+	using hash_set = std::unordered_set<K, H, E>;
+}
+#endif

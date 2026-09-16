@@ -48,6 +48,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cwchar>
 
 // ---------------------------------------------------------------------------
 // Integer and pointer types.
@@ -531,6 +532,31 @@ inline int _wcsicmp(const WCHAR * a, const WCHAR * b)
 	return (int)*a - (int)*b;
 }
 
+inline int _wcsicmp(const wchar_t * a, const wchar_t * b)
+{
+	// The wchar_t spelling, for UnicodeString.  ASCII folding, as above.
+	while (*a != 0 && *b != 0) {
+		wchar_t ca = (*a >= L'A' && *a <= L'Z') ? (wchar_t)(*a + 32) : *a;
+		wchar_t cb = (*b >= L'A' && *b <= L'Z') ? (wchar_t)(*b + 32) : *b;
+		if (ca != cb) return (int)ca - (int)cb;
+		++a; ++b;
+	}
+	return (int)*a - (int)*b;
+}
+
+inline int _wcsnicmp(const wchar_t * a, const wchar_t * b, size_t n)
+{
+	for (size_t i = 0; i < n; ++i) {
+		wchar_t ca = (a[i] >= L'A' && a[i] <= L'Z') ? (wchar_t)(a[i] + 32) : a[i];
+		wchar_t cb = (b[i] >= L'A' && b[i] <= L'Z') ? (wchar_t)(b[i] + 32) : b[i];
+		if (ca != cb) return (int)ca - (int)cb;
+		if (a[i] == 0) break;
+	}
+	return 0;
+}
+
+#define _vsnwprintf vswprintf
+
 inline void DebugBreak(void) { __builtin_debugtrap(); }
 
 // The multimedia timer resolution calls.  Mach timers do not have a resolution to raise, and
@@ -611,5 +637,95 @@ BOOL  VerQueryValueA(LPCVOID block, LPCSTR sub_block, LPVOID * buffer, UINT * le
 void _splitpath(const char * path, char * drive, char * dir, char * fname, char * ext);
 void _makepath(char * path, const char * drive, const char * dir,
                const char * fname, const char * ext);
+
+// ---------------------------------------------------------------------------
+// UTF-16 string calls.
+//
+// WCHAR is 16 bits (see the typedef above) and wchar_t is 32 on this platform, so the C library's
+// wcslen and friends would walk these strings at twice the stride.  These overloads take the
+// 16-bit spelling, which leaves every call site naming the function it already named.
+// ---------------------------------------------------------------------------
+
+inline size_t wcslen(const WCHAR * s)
+{
+	size_t n = 0;
+	while (s != nullptr && s[n] != 0) ++n;
+	return n;
+}
+
+inline WCHAR * wcscpy(WCHAR * dst, const WCHAR * src)
+{
+	WCHAR * out = dst;
+	while ((*out++ = *src++) != 0) { }
+	return dst;
+}
+
+inline WCHAR * wcsncpy(WCHAR * dst, const WCHAR * src, size_t n)
+{
+	size_t i = 0;
+	for (; i < n && src[i] != 0; ++i) dst[i] = src[i];
+	for (; i < n; ++i) dst[i] = 0;
+	return dst;
+}
+
+inline WCHAR * wcscat(WCHAR * dst, const WCHAR * src)
+{
+	WCHAR * out = dst;
+	while (*out != 0) ++out;
+	while ((*out++ = *src++) != 0) { }
+	return dst;
+}
+
+inline int wcscmp(const WCHAR * a, const WCHAR * b)
+{
+	while (*a != 0 && *a == *b) { ++a; ++b; }
+	return (int)*a - (int)*b;
+}
+
+inline int wcsncmp(const WCHAR * a, const WCHAR * b, size_t n)
+{
+	for (size_t i = 0; i < n; ++i) {
+		if (a[i] != b[i]) return (int)a[i] - (int)b[i];
+		if (a[i] == 0) break;
+	}
+	return 0;
+}
+
+inline const WCHAR * wcschr(const WCHAR * s, WCHAR c)
+{
+	for (; *s != 0; ++s) if (*s == c) return s;
+	return (c == 0) ? s : nullptr;
+}
+inline WCHAR * wcschr(WCHAR * s, WCHAR c)
+{
+	return const_cast<WCHAR *>(wcschr(const_cast<const WCHAR *>(s), c));
+}
+
+inline const WCHAR * wcsrchr(const WCHAR * s, WCHAR c)
+{
+	const WCHAR * found = nullptr;
+	for (; *s != 0; ++s) if (*s == c) found = s;
+	return found;
+}
+inline WCHAR * wcsrchr(WCHAR * s, WCHAR c)
+{
+	return const_cast<WCHAR *>(wcsrchr(const_cast<const WCHAR *>(s), c));
+}
+
+inline const WCHAR * wcsstr(const WCHAR * haystack, const WCHAR * needle)
+{
+	if (needle == nullptr || *needle == 0) return haystack;
+	for (; *haystack != 0; ++haystack) {
+		const WCHAR * h = haystack;
+		const WCHAR * n = needle;
+		while (*h != 0 && *n != 0 && *h == *n) { ++h; ++n; }
+		if (*n == 0) return haystack;
+	}
+	return nullptr;
+}
+inline WCHAR * wcsstr(WCHAR * haystack, const WCHAR * needle)
+{
+	return const_cast<WCHAR *>(wcsstr(const_cast<const WCHAR *>(haystack), needle));
+}
 
 #endif // WIN32COMPAT_H

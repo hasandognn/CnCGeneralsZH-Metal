@@ -39,30 +39,6 @@ typedef char _TCHAR;
 
 #define _tcsclen  strlen
 
-/* WCHAR is UTF-16 (see Win32Compat.h), and wchar_t on this platform is 32 bits, so the C library's
-** wcslen and friends are the wrong functions for it - they would walk the string at the wrong
-** stride.  These overloads take the 16-bit spelling, so the call sites keep the names they had. */
-
-#include "Platform/Win32Compat.h"
-
-inline size_t wcslen(const WCHAR * s)
-{
-	size_t n = 0;
-	while (s != nullptr && s[n] != 0) ++n;
-	return n;
-}
-
-inline WCHAR * wcscpy(WCHAR * dst, const WCHAR * src)
-{
-	WCHAR * out = dst;
-	while ((*out++ = *src++) != 0) { }
-	return dst;
-}
-
-inline int wcscmp(const WCHAR * a, const WCHAR * b)
-{
-	while (*a != 0 && *a == *b) { ++a; ++b; }
-	return (int)*a - (int)*b;
-}
+#include "Platform/Win32Compat.h"   // the WCHAR overloads of wcslen and friends
 
 #endif // WIN32COMPAT_TCHAR_H
