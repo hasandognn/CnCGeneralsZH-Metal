@@ -35,6 +35,8 @@
 #include "Common/BitFlags.h"
 #include "Common/INI.h"
 #include "Common/Xfer.h"
+#include "Common/Xfer.h"   // XferVersion, used below
+
 
 //-------------------------------------------------------------------------------------------------
 

@@ -38,6 +38,11 @@
 #include "GameLogic/LocomotorSet.h"
 #include "GameLogic/GameLogic.h"
 
+/* Ported: introduced by a friend declaration further down, which MSVC made visible to
+** ordinary lookup and standard C++ does not.  This is the real declaration. */
+class PathfindCell;
+
+
 class Bridge;
 class Object;
 class Weapon;

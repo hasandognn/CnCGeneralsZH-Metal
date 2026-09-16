@@ -56,6 +56,11 @@
 #include "vector3.h"
 #include "texturefilter.h"
 
+/* Ported: introduced by a friend declaration further down, which MSVC made visible to
+** ordinary lookup and standard C++ does not.  This is the real declaration. */
+class TextureClass;
+
+
 struct IDirect3DBaseTexture9;
 struct IDirect3DTexture9;
 struct IDirect3DCubeTexture9;

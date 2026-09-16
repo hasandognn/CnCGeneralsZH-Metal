@@ -48,6 +48,11 @@
 #include "always.h"
 #include "texture.h"
 
+/* Ported: introduced by a friend declaration further down, which MSVC made visible to
+** ordinary lookup and standard C++ does not.  This is the real declaration. */
+class TextureLoadTaskListClass;
+
+
 class StringClass;
 struct IDirect3DTexture9;
 class TextureLoadTaskClass;

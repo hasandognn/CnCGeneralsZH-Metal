@@ -124,6 +124,10 @@
 typedef float							Real;							// 4 bytes 
 typedef int								Int;							// 4 bytes 
 typedef unsigned int			UnsignedInt;	  	// 4 bytes 
+/* Pointer-sized, for the places that carry a pointer through an integer.  Win32 could use a plain
+** unsigned there because both were four bytes; Win64 introduced UINT_PTR for exactly this and so
+** does this. */
+typedef uintptr_t					UnsignedIntPtr;		// 4 bytes on Win32, 8 here
 typedef unsigned short		UnsignedShort;		// 2 bytes 
 typedef short							Short;					  // 2 bytes 
 typedef unsigned char			UnsignedByte;			// 1 byte		USED TO BE "Byte"

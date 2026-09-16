@@ -39,6 +39,12 @@
 #include "../../gameengine/include/common/MapObject.h"
 
 #include "Common/STLTypedefs.h"
+
+/* Ported: introduced by a friend declaration further down, which MSVC made visible to
+** ordinary lookup and standard C++ does not.  This is the real declaration. */
+class TerrainTextureClass;
+class AlphaTerrainTextureClass;
+
 typedef std::vector<ICoord2D> VecICoord2D;
 
 

@@ -75,7 +75,13 @@ enum { WIN_COLOR_UNDEFINED = GAME_COLOR_UNDEFINED };
 
 // WindowMsgData --------------------------------------------------------------
 //-----------------------------------------------------------------------------
-typedef UnsignedInt WindowMsgData;
+/* Ported: this carries a pointer in 49 files - "(WindowMsgData)&text" and the like - and was an
+** unsigned int, which holds one only while a pointer is four bytes.  It is the same problem Win32
+** had with WPARAM and LPARAM, and the same answer: pointer-sized.
+**
+** Nothing reads its width.  It is a runtime GUI message parameter, never written to a save, never
+** sent over the wire, and no sizeof(WindowMsgData) appears in the tree. */
+typedef UnsignedIntPtr WindowMsgData;
 
 //-----------------------------------------------------------------------------
 enum WindowMsgHandledType { MSG_IGNORED, MSG_HANDLED };

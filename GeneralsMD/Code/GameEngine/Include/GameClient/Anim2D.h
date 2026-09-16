@@ -35,6 +35,11 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "Common/Snapshot.h"
 
+/* Ported: introduced by a friend declaration further down, which MSVC made visible to
+** ordinary lookup and standard C++ does not.  This is the real declaration. */
+class Anim2DCollection;
+
+
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class Image;
 
