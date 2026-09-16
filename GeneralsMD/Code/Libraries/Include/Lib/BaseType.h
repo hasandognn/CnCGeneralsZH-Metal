@@ -141,7 +141,16 @@ typedef unsigned __int64	UnsignedInt64;	  	// 8 bytes
 #include "Lib/Trig.h"
 
 //-----------------------------------------------------------------------------
-typedef wchar_t WideChar;  ///< multi-byte character representations
+/* Ported: this was wchar_t, which is 16 bits on Windows and 32 here.  Its width is not an
+** implementation detail: LANMessage packs ten WideChar fields into a 476 byte datagram and its
+** own size arithmetic multiplies by two, XferSave and XferLoad write sizeof(WideChar) * length
+** into the save, and XferCRC folds the same bytes into the value the desync check compares.  At
+** four bytes the LANMessage static_assert fails outright, which is how this was found.
+**
+** char16_t is exactly the 16 bits Windows means, and being a distinct type it also makes the
+** compiler refuse any accidental call into the C library's 32-bit wide functions rather than
+** letting one through to walk a string at the wrong stride. */
+typedef char16_t WideChar;  ///< multi-byte character representations
 
 //-----------------------------------------------------------------------------
 template <typename NUM>

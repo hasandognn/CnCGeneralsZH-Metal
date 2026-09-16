@@ -412,7 +412,7 @@ void setFPSTextBox( Int sliderPos )
 		// set different color
 		staticTextGameSpeed->winEnable(FALSE);
 	}
-	text.format(L"%2d", sliderPos);
+	text.format(u"%2d", sliderPos);
 	GadgetStaticTextSetText(staticTextGameSpeed, text);
 }
 
@@ -1826,25 +1826,25 @@ void populateSkirmishBattleHonors(void)
 	GameWindow *streakWindow = TheWindowManager->winGetWindowFromId( NULL, NAMEKEY("SkirmishGameOptionsMenu.wnd:StaticTextStreakValue") );
 	if (streakWindow)
 	{
-		uStr.format(L"%d", stats.getWinStreak());
+		uStr.format(u"%d", stats.getWinStreak());
 		GadgetStaticTextSetText(streakWindow, uStr);
 	}
 	GameWindow *bestStreakWindow = TheWindowManager->winGetWindowFromId( NULL, NAMEKEY("SkirmishGameOptionsMenu.wnd:StaticTextBestStreakValue") );
 	if (bestStreakWindow)
 	{
-		uStr.format(L"%d", stats.getBestWinStreak());
+		uStr.format(u"%d", stats.getBestWinStreak());
 		GadgetStaticTextSetText(bestStreakWindow, uStr);
 	}
 	GameWindow *winsWindow = TheWindowManager->winGetWindowFromId( NULL, NAMEKEY("SkirmishGameOptionsMenu.wnd:StaticTextWinsValue") );
 	if (winsWindow)
 	{
-		uStr.format(L"%d", stats.getWins());
+		uStr.format(u"%d", stats.getWins());
 		GadgetStaticTextSetText(winsWindow, uStr);
 	}
 	GameWindow *lossesWindow = TheWindowManager->winGetWindowFromId( NULL, NAMEKEY("SkirmishGameOptionsMenu.wnd:StaticTextLossesValue") );
 	if (lossesWindow)
 	{
-		uStr.format(L"%d", stats.getLosses());
+		uStr.format(u"%d", stats.getLosses());
 		GadgetStaticTextSetText(lossesWindow, uStr);
 	}
 
@@ -2042,7 +2042,7 @@ void populateSkirmishBattleHonors(void)
 
 	// TEST FOR STREAK HONOR
 	Int streak = stats.getBestWinStreak();
-	uStr.format(L"%10d", streak);
+	uStr.format(u"%10d", streak);
 	if (streak >= 1000)
 	{
 		InsertBattleHonor(list, TheMappedImageCollection->findImageByName("HonorStreak_1000"), TRUE,
@@ -2081,7 +2081,7 @@ void populateSkirmishBattleHonors(void)
 
 	// TEST FOR DOMINATION HONOR
 	Int totalWins = stats.getWins();
-	uStr.format(L"%10d", totalWins);
+	uStr.format(u"%10d", totalWins);
 	if (totalWins >= 10000)
 	{
 		InsertBattleHonor(list, TheMappedImageCollection->findImageByName("Domination_10000"), TRUE,

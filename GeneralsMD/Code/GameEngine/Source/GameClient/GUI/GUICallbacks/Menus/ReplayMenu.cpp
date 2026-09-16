@@ -181,7 +181,7 @@ void PopulateReplayFileListbox(GameWindow *listbox)
 				// was no way to tell last night's game from one in April. Date first, then the time,
 				// both in whatever format the player's own Region settings ask for.
 				UnicodeString displayTimeBuffer = getUnicodeDateBuffer(header.timeVal);
-				displayTimeBuffer.concat( L" " );
+				displayTimeBuffer.concat( u" " );
 				displayTimeBuffer.concat( getUnicodeTimeBuffer(header.timeVal) );
 
 				// version (no-op)
@@ -207,7 +207,7 @@ void PopulateReplayFileListbox(GameWindow *listbox)
 //					Int mins = totalSeconds/60;
 //					Int secs = totalSeconds%60;
 //					Real fps = header.frameDuration/totalSeconds;
-//					extraStr.format(L"%d:%d (%g fps) %hs", mins, secs, fps, header.desyncGame?"OOS ":"");
+//					extraStr.format(u"%d:%d (%g fps) %hs", mins, secs, fps, header.desyncGame?"OOS ":"");
 //
 //					for (Int i=0; i<MAX_SLOTS; ++i)
 //					{
@@ -215,9 +215,9 @@ void PopulateReplayFileListbox(GameWindow *listbox)
 //						if (slot && slot->isHuman())
 //						{
 //							if (i)
-//								extraStr.concat(L", ");
+//								extraStr.concat(u", ");
 //							if (header.playerDiscons[i])
-//								extraStr.concat(L'*');
+//								extraStr.concat(u'*');
 //							extraStr.concat(info.getConstSlot(i)->getName());
 //						}
 //					}
@@ -229,7 +229,7 @@ void PopulateReplayFileListbox(GameWindow *listbox)
 //					Int mins = totalSeconds/60;
 //					Int secs = totalSeconds%60;
 //					Real fps = header.frameDuration/totalSeconds;
-//					extraStr.format(L"%d:%d (%g fps)", mins, secs, fps);
+//					extraStr.format(u"%d:%d (%g fps)", mins, secs, fps);
 //				}
 
 				// pick a color
@@ -306,7 +306,7 @@ void ReplayMenuInit( WindowLayout *layout, void *userData )
 	instData.init();
 	BitSet( instData.m_style, GWS_PUSH_BUTTON | GWS_MOUSE_TRACK );
 	instData.m_textLabelString = "Debug: Analyze Replay";
-	instData.setTooltipText(UnicodeString(L"Only Used in Debug and Internal!"));
+	instData.setTooltipText(UnicodeString(u"Only Used in Debug and Internal!"));
 	buttonAnalyzeReplay = TheWindowManager->gogoGadgetPushButton( parentReplayMenu, 
 																									 WIN_STATUS_ENABLED | WIN_STATUS_IMAGE, 
 																									 4, 4, 
@@ -528,7 +528,7 @@ WindowMsgHandledType ReplayMenuSystem( GameWindow *window, UnsignedInt msg,
 					GadgetListBoxGetSelected( listboxReplayFiles,  &selected );
 					if(selected < 0)
 					{
-						MessageBoxOk(UnicodeString(L"Blah Blah"),UnicodeString(L"Please select something munkee boy"), NULL);
+						MessageBoxOk(UnicodeString(u"Blah Blah"),UnicodeString(u"Please select something munkee boy"), NULL);
 						break;
 					}
 

@@ -276,7 +276,7 @@ void W3DTankDraw::updateTreadObjects(void)
 							m_treads[m_treadCount].m_materialSettings.customUVOffset=Vector2(0,0);
 							switch (meshName[6])	//check next character after 'TREADS'
 							{
-								case 'L':
+								case 'u':
 								case 'l':	m_treads[m_treadCount].m_type = TREAD_LEFT;
 										break;
 								case 'R':

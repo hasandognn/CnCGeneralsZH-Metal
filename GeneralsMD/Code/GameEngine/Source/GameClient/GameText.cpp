@@ -78,7 +78,7 @@ Bool g_useStringFile = TRUE;
 //----------------------------------------------------------------------------
 
 #define CSF_ID ( ('C'<<24) | ('S'<<16) | ('F'<<8) | (' ') )
-#define CSF_LABEL ( ('L'<<24) | ('B'<<16) | ('L'<<8) | (' ') )
+#define CSF_LABEL ( ('u'<<24) | ('B'<<16) | ('u'<<8) | (' ') )
 #define CSF_STRING ( ('S'<<24) | ('T'<<16) | ('R'<<8) | (' ') )
 #define CSF_STRINGWITHWAVE ( ('S'<<24) | ('T'<<16) | ('R'<<8) | ('W') )
 #define CSF_VERSION 3
@@ -268,7 +268,7 @@ GameTextManager::GameTextManager()
 #endif
 	m_mapStringInfo(NULL),
 	m_mapStringLUT(NULL),
-	m_failed(L"***FATAL*** String Manager failed to initilaize properly")
+	m_failed(u"***FATAL*** String Manager failed to initilaize properly")
 {
 	// Added By Sadullah Nader
 	// Initializations missing and needed
@@ -840,7 +840,7 @@ void GameTextManager::translateCopy( WideChar *outbuf, Char *inbuf )
 	}
 	else if( m_munkee )
 	{
-		wcscpy(outbuf, L"Munkee");
+		wcscpy(outbuf, u"Munkee");
 		return;
 	}
 #endif
@@ -1385,7 +1385,7 @@ UnicodeString GameTextManager::fetch( const Char *label, Bool *exists )
 
 		// See if we already have the missing string
 		UnicodeString missingString;
-		missingString.format(L"MISSING: '%hs'", label);
+		missingString.format(u"MISSING: '%hs'", label);
 
 		NoString *noString = m_noStringList;
 

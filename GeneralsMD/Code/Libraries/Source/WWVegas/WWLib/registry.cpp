@@ -299,7 +299,7 @@ void	RegistryClass::Deleta_All_Values( void )
 void	RegistryClass::Get_String( const WCHAR * name, WideStringClass &string, const WCHAR *default_string )
 {
 	assert( IsValid );
-	string = (default_string == NULL) ? L"" : default_string;
+	string = (default_string == NULL) ? u"" : default_string;
 
 	//
 	//	Get the size of the entry

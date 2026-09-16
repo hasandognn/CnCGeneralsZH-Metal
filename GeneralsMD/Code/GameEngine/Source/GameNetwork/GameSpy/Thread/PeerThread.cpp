@@ -1271,7 +1271,7 @@ void PeerThreadClass::Thread_Function()
 	peerSetRoomWatchKeys(peer, GroupRoom, 1, &key, PEERTrue);
 
 	m_localRoomID = 0;
-	m_localStagingServerName = L"";
+	m_localStagingServerName = u"";
 
 	m_qmStatus = QM_IDLE;
 
@@ -1633,7 +1633,7 @@ void PeerThreadClass::Thread_Function()
 							peerJoinGroupRoom( peer, oldGroupID, joinRoomCallback, (void *)this, PEERTrue );
 						}
 						m_isHosting = FALSE;
-						m_localStagingServerName = L"";
+						m_localStagingServerName = u"";
 						m_playerNames[0] = "";
 					}
 					else

@@ -1180,16 +1180,16 @@ static void TestWaterUpdate(void)
 			if (trackEditMode)
 			{
 				UnicodeString string;
-				string.format(L"Leaving Water Track Edit Mode");
+				string.format(u"Leaving Water Track Edit Mode");
 				TheInGameUI->message(string);
 			}
 			else
 			{
 				UnicodeString string;
-				string.format(L"Entering Water Track Edit Mode");
+				string.format(u"Entering Water Track Edit Mode");
 				TheInGameUI->message(string);
 
-				string.format(L"Wave Type: %hs",waveTypeInfo[currentWaveType].m_waveTypeName);
+				string.format(u"Wave Type: %hs",waveTypeInfo[currentWaveType].m_waveTypeName);
 				TheInGameUI->message(string);
 			}
 
@@ -1222,7 +1222,7 @@ static void TestWaterUpdate(void)
 						TheTacticalView->screenToTerrain( (ICoord2D *)&screenPoint, &terrainPointStart);
 						haveStart=1;
 						UnicodeString string;
-						string.format(L"Added Start");
+						string.format(u"Added Start");
 						TheInGameUI->message(string);
 					}
 					else
@@ -1257,7 +1257,7 @@ static void TestWaterUpdate(void)
 							}
 
 							UnicodeString string;
-							string.format(L"Added End");
+							string.format(u"Added End");
 							TheInGameUI->message(string);
 						}
 						haveStart=0;	//reset for next segment
@@ -1294,7 +1294,7 @@ static void TestWaterUpdate(void)
 						currentWaveType = WaveTypeFirst;
 
 					UnicodeString string;
-					string.format(L"Wave Type: %hs",waveTypeInfo[currentWaveType].m_waveTypeName);
+					string.format(u"Wave Type: %hs",waveTypeInfo[currentWaveType].m_waveTypeName);
 					TheInGameUI->message(string);
 				}
 			}
@@ -1311,7 +1311,7 @@ static void TestWaterUpdate(void)
 					track=NULL;
 					track2=NULL;
 					UnicodeString string;
-					string.format(L"Saved Tracks");
+					string.format(u"Saved Tracks");
 					TheInGameUI->message(string);
 				}
 			}
@@ -1329,7 +1329,7 @@ static void TestWaterUpdate(void)
 					track=NULL;
 					track2=NULL;
 					UnicodeString string;
-					string.format(L"Loaded Tracks");
+					string.format(u"Loaded Tracks");
 					TheInGameUI->message(string);
 				}
 			}

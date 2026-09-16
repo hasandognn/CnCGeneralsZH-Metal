@@ -183,7 +183,7 @@ static void formatStripSeconds( UnicodeString *text, Int seconds )
 	if( seconds < 0 )
 		seconds = 0;
 
-	text->format( L"%ds", seconds );
+	text->format( u"%ds", seconds );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2729,7 +2729,7 @@ void InGameUI::update( void )
 				// first grab the letter we want to add
 				WideChar tempWChar = m_militarySubtitle->subtitle.getCharAt(m_militarySubtitle->index);
 				// if that letter is a return, add a new line
-				if(tempWChar == L'\n')
+				if(tempWChar == u'\n')
 				{
 					// increment the Block position's Y value to draw it on the next line
 					Int height;
@@ -4623,7 +4623,7 @@ void InGameUI::createMouseoverHint( const GameMessage *msg )
 				AsciiString txtTemp;
 				txtTemp.format("ThingTemplate:%s", obj->getTemplate()->getName().str());
 				str = TheGameText->fetch(txtTemp);
-				//str.format(L"ThingTemplate:'%hs'", obj->getTemplate()->getName().str());
+				//str.format(u"ThingTemplate:'%hs'", obj->getTemplate()->getName().str());
 			}
 
 #ifdef AI_DEBUG_TOOLTIPS
@@ -4654,21 +4654,21 @@ void InGameUI::createMouseoverHint( const GameMessage *msg )
 				{
 					if (!teamName.isEmpty())
 					{
-						str.format(L"%hs(%hs): %s", teamName.str(), objName.str(), str.str());
+						str.format(u"%hs(%hs): %s", teamName.str(), objName.str(), str.str());
 					}
 					else
 					{
-						str.format(L"%hs: %s", objName.str(), str.str());
+						str.format(u"%hs: %s", objName.str(), str.str());
 					}
 				}
 				else
 				{
 					if (!teamName.isEmpty())
 					{
-						str.format(L"%hs: %s", teamName.str(), str.str());
+						str.format(u"%hs: %s", teamName.str(), str.str());
 					}
 				}
-				str.format(L"%s - %hs", str.str(), stateName.str());
+				str.format(u"%s - %hs", str.str(), stateName.str());
 
 			}
 #endif
@@ -4689,7 +4689,7 @@ void InGameUI::createMouseoverHint( const GameMessage *msg )
 				UnicodeString tooltip;
 				//if (TheRecorder->isMultiplayer() && player->getPlayerType() == PLAYER_HUMAN)
 				if (TheRecorder->isMultiplayer() && player->isPlayableSide())
-					tooltip.format(L"%s\n%s", str.str(), ((Player *)player)->getPlayerDisplayName().str());
+					tooltip.format(u"%s\n%s", str.str(), ((Player *)player)->getPlayerDisplayName().str());
 				else
 					tooltip = str;
 
@@ -6348,13 +6348,13 @@ void InGameUI::postDraw( void )
 					Int sec = readySecs - min*60;
 					
 					if (!info->isCountdown)
-						line.format(L"%s %d", info->timerText.str(), framesLeft);
+						line.format(u"%s %d", info->timerText.str(), framesLeft);
 					else
 					{
 						if (sec >= 10)
-							line.format(L"%s %d:%d", info->timerText.str(), min, sec);
+							line.format(u"%s %d:%d", info->timerText.str(), min, sec);
 						else
-							line.format(L"%s %d:0%d", info->timerText.str(), min, sec);
+							line.format(u"%s %d:0%d", info->timerText.str(), min, sec);
 					}
 					info->displayString->setText(line);
 				}
@@ -7832,7 +7832,7 @@ void InGameUI::drawPeaceCountdown( UnsignedInt framesLeft )
 									TRUE ) );
 
 	UnicodeString text;
-	text.format( L"%d", (Int)secondsLeft );
+	text.format( u"%d", (Int)secondsLeft );
 	m_peaceCountdownDisplayString->setText( text );
 
 	// the same string the plate at the top uses, in its own size: the two are never up together
@@ -7927,7 +7927,7 @@ void InGameUI::drawHudOverlay( void )
 	UnsignedInt realSecs = (nowMs - m_hudRealClockBaseMs) / 1000;
 
 	UnicodeString text;
-	text.format( L"%02d:%02d:%02d(%02d:%02d:%02d)   %dhz(%dfps) %s",
+	text.format( u"%02d:%02d:%02d(%02d:%02d:%02d)   %dhz(%dfps) %s",
 							 gameSecs / 3600, (gameSecs / 60) % 60, gameSecs % 60,
 							 realSecs / 3600, (realSecs / 60) % 60, realSecs % 60,
 							 REAL_TO_INT( m_hudLogicHz + 0.5f ), REAL_TO_INT( m_hudFps + 0.5f ),
@@ -7940,7 +7940,7 @@ void InGameUI::drawHudOverlay( void )
 	if( unitCap > 0 && localPlayer && !localPlayer->isPlayerObserver() )
 	{
 		UnicodeString units;
-		units.format( L"   %d/%d units", localPlayer->countUnitsTowardCap(), unitCap );
+		units.format( u"   %d/%d units", localPlayer->countUnitsTowardCap(), unitCap );
 		text.concat( units );
 	}
 
@@ -8370,7 +8370,7 @@ void InGameUI::drawStripQuantity( Int which, Int x, Int y, Int w, Int quantity )
 	}
 
 	UnicodeString text;
-	text.format( L"x%d", quantity );
+	text.format( u"x%d", quantity );
 	quantityString->setText( text );
 
 	Int textWidth = 0, textHeight = 0;
@@ -8594,7 +8594,7 @@ void InGameUI::drawSuperweaponStrip( void )
 			}
 
 			UnicodeString text;
-			text.format( L"+%d", hidden );
+			text.format( u"+%d", hidden );
 			overflow->setText( text );
 
 			Int textWidth = 0, textHeight = 0;
@@ -9122,7 +9122,7 @@ void InGameUI::drawProductionStripColumn( Int row, Int left, Int bottomY )
 		}
 
 		UnicodeString text;
-		text.format( L"+%d", hidden );
+		text.format( u"+%d", hidden );
 		overflow->setText( text );
 
 		Int textWidth = 0, textHeight = 0;
@@ -9929,7 +9929,7 @@ void InGameUI::showIdleWorkerLayout( void )
 //	else
 //	{
 //		UnicodeString number;
-//		number.format(L"%d",m_currentIdleWorkerDisplay);
+//		number.format(u"%d",m_currentIdleWorkerDisplay);
 //		GadgetButtonSetText(m_idleWorkerWin, number);
 //	}
 }

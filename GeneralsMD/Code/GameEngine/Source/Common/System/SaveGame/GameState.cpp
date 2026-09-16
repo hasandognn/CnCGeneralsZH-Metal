@@ -244,7 +244,7 @@ UnicodeString getUnicodeDateBuffer(SYSTEMTIME timeVal)
 								 dateBuffer, sizeof(dateBuffer) );
 	displayDateBuffer.set(dateBuffer);
 	return displayDateBuffer;
-	//displayDateBuffer.format( L"%ls", dateBuffer );
+	//displayDateBuffer.format( u"%ls", dateBuffer );
 }															
 
 UnicodeString getUnicodeTimeBuffer(SYSTEMTIME timeVal) 
@@ -1216,7 +1216,7 @@ void GameState::populateSaveGameListbox( GameWindow *listbox, SaveLoadLayoutType
 			
 			displayLabel = TheGameText->fetch( saveGameInfo->mapLabel, &exists );
 			if( exists == FALSE )
-				displayLabel.format( L"%S", saveGameInfo->mapLabel.str() );
+				displayLabel.format( u"%S", saveGameInfo->mapLabel.str() );
 
 		}  // end if
 

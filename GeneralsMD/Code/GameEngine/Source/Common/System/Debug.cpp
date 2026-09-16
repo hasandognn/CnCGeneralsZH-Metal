@@ -165,7 +165,7 @@ static Bool isUnattendedRun( void )
 {
 	static Int cached = -1;
 	if (cached < 0)
-		cached = findEarlyCommandLineOption( L"-headless" ) ? 1 : 0;
+		cached = findEarlyCommandLineOption( u"-headless" ) ? 1 : 0;
 	return cached != 0;
 }
 
@@ -400,7 +400,7 @@ void DebugInit(int flags)
 			 WinMain because a static constructor gets here first: preMainInitMemoryManager() calls
 			 DEBUG_INIT before main, and by the time WinMain could set gAppPrefix the file is open. */
 		char logPrefix[ 32 ];
-		if (!findEarlyCommandLineValue( L"-logPrefix", logPrefix, sizeof( logPrefix ) ))
+		if (!findEarlyCommandLineValue( u"-logPrefix", logPrefix, sizeof( logPrefix ) ))
 			logPrefix[0] = 0;
 
 		strlcpy(prevbuf, dirbuf, ARRAY_SIZE(prevbuf));

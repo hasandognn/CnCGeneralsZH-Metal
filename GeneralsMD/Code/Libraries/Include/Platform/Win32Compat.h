@@ -68,7 +68,7 @@ typedef uint32_t            UINT;
 typedef int                 BOOL;
 typedef unsigned char       UCHAR;
 typedef char                CHAR;
-typedef uint16_t            WCHAR;      // UTF-16, not wchar_t: wchar_t is 32 bits here.
+typedef char16_t            WCHAR;      // UTF-16, as Windows means it; wchar_t is 32 bits here.
 typedef float               FLOAT;
 
 typedef void *              LPVOID;

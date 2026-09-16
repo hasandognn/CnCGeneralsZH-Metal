@@ -792,8 +792,8 @@ void	Render2DSentenceClass::Build_Sentence_Centered (const WCHAR *text, int *hkX
 			// read a word
 			//
 			int charWidth = 0;
-			while ((*word != 0) && (*word > L' ') && (*word != L'\n')) {
-				if( ParseHotKey && (*word == L'&') && (*word+1 != 0) && (*word+1 > L' ') && (*word+1 != L'\n'))
+			while ((*word != 0) && (*word > u' ') && (*word != u'\n')) {
+				if( ParseHotKey && (*word == u'&') && (*word+1 != 0) && (*word+1 > u' ') && (*word+1 != u'\n'))
 				{
 					int offset = 0;
 					//Added By Saad
@@ -801,7 +801,7 @@ void	Render2DSentenceClass::Build_Sentence_Centered (const WCHAR *text, int *hkX
 					{
 						const WCHAR *word_back = word;
 						*word_back--;
-						if (*word_back == L' ')
+						if (*word_back == u' ')
 						{
 							line_width -= word_width;
 							offset =-1;
@@ -857,7 +857,7 @@ void	Render2DSentenceClass::Build_Sentence_Centered (const WCHAR *text, int *hkX
 			//
 			// We were some a new line character break and process
 			//
-			if(*word != L' ')
+			if(*word != u' ')
 				break;
 			//
 			// add the space to our width
@@ -887,14 +887,14 @@ void	Render2DSentenceClass::Build_Sentence_Centered (const WCHAR *text, int *hkX
 			//	shortcuts now, and the letter used to be left out here for a second renderer to
 			//	paint in yellow, which drew nothing at all for a letter outside ASCII.
 			//
-			if(ParseHotKey && (ch == L'&') && (*text != 0) && (*text > L' ') && (*text != L'\n'))
+			if(ParseHotKey && (ch == u'&') && (*text != 0) && (*text > u' ') && (*text != u'\n'))
 			{
 				ch = *text++;
 			}
 			float char_spacing = Font->Get_Char_Spacing (ch);
 			
 			bool exceeded_texture_width	= ((TextureOffset.I + char_spacing) >= CurrTextureSize);
-			bool encountered_break_char	= (ch == L' ' || ch == L'\n' || ch == 0);
+			bool encountered_break_char	= (ch == u' ' || ch == u'\n' || ch == 0);
 			
 			//
 			//	Do we need to record this portion of the sentence to its own chunk?
@@ -911,9 +911,9 @@ void	Render2DSentenceClass::Build_Sentence_Centered (const WCHAR *text, int *hkX
 				//
 				//	Adjust the output coordinates
 				//
-				if (ch == L' ') {
+				if (ch == u' ') {
 					Cursor.X += char_spacing;
-				} else if ((ch == 0 )|| (ch == L'\n')) {
+				} else if ((ch == 0 )|| (ch == u'\n')) {
 					break;
 				}
 								
@@ -936,7 +936,7 @@ void	Render2DSentenceClass::Build_Sentence_Centered (const WCHAR *text, int *hkX
 			//
 			//	Adjust the output coordinates
 			//
-			if (ch != L'\n' && ch != L' ') {
+			if (ch != u'\n' && ch != u' ') {
 				
 				//
 				//	Ensure the surface is locked	
@@ -1020,7 +1020,7 @@ Vector2	Render2DSentenceClass::Build_Sentence_Not_Centered (const WCHAR *text, i
 		//	Determine how much horizontal space this character requires; a hotkey '&' is
 		//	dropped and its letter drawn like the rest, as in Build_Sentence_Centered
 		//
-		if(ParseHotKey && (ch == L'&') && (*text != 0) && (*text > L' ') && (*text != L'\n'))
+		if(ParseHotKey && (ch == u'&') && (*text != 0) && (*text > u' ') && (*text != u'\n'))
 		{
 				hotKeyPosY = Cursor.Y;
 			if (calcHotKeyX)
@@ -1033,7 +1033,7 @@ Vector2	Render2DSentenceClass::Build_Sentence_Not_Centered (const WCHAR *text, i
 		float char_spacing = Font->Get_Char_Spacing (ch);
 
 		bool exceeded_texture_width	= ((TextureOffset.I + char_spacing) >= CurrTextureSize);
-		bool encountered_break_char	= (ch == L' ' || ch == L'\n' || ch == 0);
+		bool encountered_break_char	= (ch == u' ' || ch == u'\n' || ch == 0);
 		bool wordBiggerThenLine = ((useHardWordWrap) && ( WrapWidth != 0 ) &&((Cursor.X + TextureOffset.I -TextureStartX + char_spacing) >= WrapWidth));
 		//
 		//	Do we need to record this portion of the sentence to its own chunk?
@@ -1054,7 +1054,7 @@ Vector2	Render2DSentenceClass::Build_Sentence_Not_Centered (const WCHAR *text, i
 			//
 			//	Adjust the output coordinates
 			//
-			if (ch == L' ') {
+			if (ch == u' ') {
 				//Cursor.X += char_spacing;
 				//maxX = max(maxX, Cursor.X);
 
@@ -1068,8 +1068,8 @@ Vector2	Render2DSentenceClass::Build_Sentence_Not_Centered (const WCHAR *text, i
 					//
 					const WCHAR *word	= text;
 					float word_width	= char_spacing;
-					while ((*word != 0) && (*word > L' ')) {
-						if(ParseHotKey && (*word == L'&') && (*word+1 != 0) && (*word+1 > L' ') && (*word+1 != L'\n'))
+					while ((*word != 0) && (*word > u' ')) {
+						if(ParseHotKey && (*word == u'&') && (*word+1 != 0) && (*word+1 > u' ') && (*word+1 != u'\n'))
 							*word++;
 						word_width += Font->Get_Char_Spacing (*word++);
 					}
@@ -1084,7 +1084,7 @@ Vector2	Render2DSentenceClass::Build_Sentence_Not_Centered (const WCHAR *text, i
 					}
 				}
 
-			} else if (ch == L'\n') {
+			} else if (ch == u'\n') {
 				Cursor.X = 0;
 				Cursor.Y += char_height;
 			} else if (ch == 0) {
@@ -1112,7 +1112,7 @@ Vector2	Render2DSentenceClass::Build_Sentence_Not_Centered (const WCHAR *text, i
 			}
 		}
 		
-		if (ch != L'\n' ) {
+		if (ch != u'\n' ) {
 
 			//
 			//	Ensure the surface is locked	
@@ -1179,7 +1179,7 @@ Render2DSentenceClass::Build_Sentence (const WCHAR *text, int *hkX, int *hkY)
 		return;
 	}
 
-	if(Centered && (WrapWidth > 0 || wcschr(text,L'\n')))
+	if(Centered && (WrapWidth > 0 || wcschr(text,u'\n')))
 		Build_Sentence_Centered(text, hkX, hkY);
 	else
 		Build_Sentence_Not_Centered(text, hkX, hkY);

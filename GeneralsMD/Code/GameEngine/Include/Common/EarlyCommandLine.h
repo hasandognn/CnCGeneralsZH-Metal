@@ -59,7 +59,7 @@ inline bool findCommandLineValueIn( const wchar_t *cmdLine, const wchar_t *optio
 
 	while (iswspace( *at ))
 		++at;
-	if (*at == 0 || *at == L'-')
+	if (*at == 0 || *at == u'-')
 		return false;
 
 	size_t i = 0;

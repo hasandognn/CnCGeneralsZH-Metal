@@ -110,7 +110,7 @@ void JobSystem::init( Int workers )
 			 started before that table runs and because 0 has to be reachable - which is the whole
 			 point: it is the single-threaded baseline to measure a threading change against. */
 		char value[ 32 ];
-		if( findEarlyCommandLineValue( L"-jobthreads", value, sizeof(value) ) )
+		if( findEarlyCommandLineValue( u"-jobthreads", value, sizeof(value) ) )
 		{
 			workers = atoi( value );
 		}

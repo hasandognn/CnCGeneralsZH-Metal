@@ -1212,7 +1212,7 @@ void Mouse::setCursor( MouseCursor cursor )
 										 &(cursorInfo->cursorTextColor),
 										 &(cursorInfo->cursorTextDropColor) );
 		else
-			setMouseText( UnicodeString( L"" ), NULL, NULL );
+			setMouseText( UnicodeString( u"" ), NULL, NULL );
 
 	}  // end if
 

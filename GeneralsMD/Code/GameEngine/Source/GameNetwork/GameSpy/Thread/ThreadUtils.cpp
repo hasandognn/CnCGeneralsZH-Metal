@@ -39,19 +39,19 @@ std::wstring MultiByteToWideCharSingleLine( const char *orig )
 	WideChar *c = NULL;
 	do
 	{
-		c = wcschr(dest, L'\n');
+		c = wcschr(dest, u'\n');
 		if (c)
 		{
-			*c = L' ';
+			*c = u' ';
 		}
 	}
 	while ( c != NULL );
 	do
 	{
-		c = wcschr(dest, L'\r');
+		c = wcschr(dest, u'\r');
 		if (c)
 		{
-			*c = L' ';
+			*c = u' ';
 		}
 	}
 	while ( c != NULL );

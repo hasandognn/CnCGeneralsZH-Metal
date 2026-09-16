@@ -587,7 +587,7 @@ void RecorderClass::startRecording(GameDifficulty diff, Int originalGameMode, In
 	// Print out the name of the replay.
 	UnicodeString replayName;
 	replayName = TheGameText->fetch("GUI:LastReplay");
-	fwprintf(m_file, L"%ws", replayName.str());
+	fwprintf(m_file, u"%ws", replayName.str());
 	fputwc(0, m_file);
 
 	// Date and Time
@@ -599,9 +599,9 @@ void RecorderClass::startRecording(GameDifficulty diff, Int originalGameMode, In
 	UnicodeString versionString = TheVersion->getUnicodeVersion();
 	UnicodeString versionTimeString = TheVersion->getUnicodeBuildTime();
 	UnsignedInt versionNumber = TheVersion->getVersionNumber();
-	fwprintf(m_file, L"%ws", versionString.str());
+	fwprintf(m_file, u"%ws", versionString.str());
 	fputwc(0, m_file);
-	fwprintf(m_file, L"%ws", versionTimeString.str());
+	fwprintf(m_file, u"%ws", versionTimeString.str());
 	fputwc(0, m_file);
 	fwrite(&versionNumber, sizeof(UnsignedInt), 1, m_file);
 	fwrite(&(TheGlobalData->m_exeCRC), sizeof(UnsignedInt), 1, m_file);
@@ -671,10 +671,10 @@ void RecorderClass::startRecording(GameDifficulty diff, Int originalGameMode, In
 			continue;
 		}
 		UnicodeString name = player->getPlayerDisplayName();
-		fwprintf(m_file, L"%s", name.str());
+		fwprintf(m_file, u"%s", name.str());
 		fputwc(0, m_file);
 		UnicodeString faction = player->getFaction()->getFactionDisplayName();
-		fwprintf(m_file, L"%s", faction.str());
+		fwprintf(m_file, u"%s", faction.str());
 		fputwc(0, m_file);
 		Int color = player->getColor()->getAsInt();
 		fwrite(&color, sizeof(color), 1, m_file);
@@ -1197,9 +1197,9 @@ Bool RecorderClass::playbackFile(AsciiString filename)
  * Read a unicode string from the current file position. The string is assumed to be 0-terminated.
  */
 UnicodeString RecorderClass::readUnicodeString() {
-	// Was UnsignedShort: VC6's wchar_t was a typedef for it, so L"" initialised it
+	// Was UnsignedShort: VC6's wchar_t was a typedef for it, so u"" initialised it
 	// and UnicodeString took it.  wchar_t is its own type now.
-	WideChar str[1024] = L"";
+	WideChar str[1024] = u"";
 	Int index = 0;
 
 	Int c = fgetwc(m_file);
@@ -1219,7 +1219,7 @@ UnicodeString RecorderClass::readUnicodeString() {
 		}
 		str[index] = c;
 	}
-	str[1023] = L'\0';
+	str[1023] = u'\0';
 
 	UnicodeString retval(str);
 	return retval;

@@ -122,7 +122,7 @@ wchar_t* wcstrim(wchar_t* buffer)
 		/* Clip trailing white space from the string. */
 		for (int index = wcslen(buffer) - 1; index >= 0; --index) {
 			if ((*source != 0) && ((unsigned int)buffer[index] <= 32)) {
-				buffer[index] = L'\0';
+				buffer[index] = u'\0';
 			} else {
 				break;
 			}
